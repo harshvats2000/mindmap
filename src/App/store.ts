@@ -20,7 +20,7 @@ export type RFState = {
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
-  addChildNode: (parentNode: Node, position: XYPosition) => Node;
+  addChildNode: (parentNode: Node) => Node;
   updateSelectedNode: (nodeId: string) => void;
 };
 
@@ -30,8 +30,21 @@ const useStore = create<RFState>((set, get) => ({
       id: "root",
       type: "mindmap",
       data: { label: "React Flow Mind Map" },
-      position: { x: 0, y: 0 }
+      position: { x: 0, y: 0 },
+      height: 100
     }
+    // {
+    //   id: "child1",
+    //   type: "mindmap",
+    //   data: { label: "React Flow Mind Map" },
+    //   position: { x: 300, y: 0 }
+    // },
+    // {
+    //   id: "child2",
+    //   type: "mindmap",
+    //   data: { label: "React Flow Mind Map" },
+    //   position: { x: 300, y: 300 }
+    // }
   ],
   edges: [],
   selectedNode: null,
@@ -59,49 +72,43 @@ const useStore = create<RFState>((set, get) => ({
   },
   updateSelectedNode: (nodeId: string) => {
     set({
-      nodes: get().nodes.map((node) => {
-        if (node.id === nodeId) {
-          node = { ...node, selected: true };
-        } else {
-          node = { ...node, selected: false };
-        }
-
-        set({ selectedNode: node });
-
-        return node;
-      })
+      selectedNode: get().nodes.find((node) => node.id === nodeId)
     });
   },
-  addChildNode: (parentNode: Node, position: XYPosition) => {
-    const newNode = {
+  addChildNode: (parentNode: Node) => {
+    const existingChildren = get().nodes.filter((node) => node.parentNode === parentNode.id);
+    const childCount = existingChildren.length;
+
+    const newNode: Node = {
       id: nanoid(),
       type: "mindmap",
       data: { label: "New Node" },
-      position,
-      parentNode: parentNode.id
+      position: { x: 300, y: childCount * 150 },
+      parentNode: parentNode.id,
+      height: 100
     };
 
-    const newEdge = {
+    const newEdge: Edge = {
       id: nanoid(),
       source: parentNode.id,
       target: newNode.id
     };
 
     set((state) => {
-      const parentIndex = state.nodes.findIndex((node) => node.id === parentNode.id);
-      const updatedNodes = [...state.nodes.slice(0, parentIndex + 1), newNode, ...state.nodes.slice(parentIndex + 1)];
-
-      const updatedEdges = [...state.edges, newEdge];
+      const updatedNodes = state.nodes.map((node) => {
+        if (node.parentNode === parentNode.id) {
+          // Move existing children up
+          return { ...node, position: { ...node.position, y: node.position.y - 75 } };
+        }
+        return node;
+      });
 
       return {
-        nodes: updatedNodes,
-        edges: updatedEdges
+        nodes: [...updatedNodes, newNode],
+        edges: [...state.edges, newEdge],
+        selectedNode: newNode
       };
     });
-
-    setTimeout(() => {
-      console.log(get().nodes);
-    }, 500);
 
     return newNode;
   }

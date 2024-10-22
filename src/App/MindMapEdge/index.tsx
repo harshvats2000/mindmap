@@ -1,13 +1,13 @@
-import { BaseEdge, EdgeProps, getStraightPath } from 'reactflow';
+import { BaseEdge, EdgeProps, getSimpleBezierPath } from "reactflow";
 
 function MindMapEdge(props: EdgeProps) {
   const { sourceX, sourceY, targetX, targetY } = props;
 
-  const [edgePath] = getStraightPath({
+  const [edgePath] = getSimpleBezierPath({
     sourceX,
-    sourceY: sourceY + 18,
+    sourceY,
     targetX,
-    targetY,
+    targetY
   });
 
   return <BaseEdge path={edgePath} {...props} />;
