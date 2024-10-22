@@ -1,23 +1,19 @@
-import { useLayoutEffect, useEffect, useRef } from 'react';
-import { Handle, NodeProps, Position } from 'reactflow';
+import { useLayoutEffect, useEffect, useRef } from "react";
+import { Handle, NodeProps, Position } from "reactflow";
+import { NodeData } from "../types";
+// import useStore from "../store";
 
-import useStore from '../store';
+function MindMapNode(node: NodeProps<NodeData>) {
+  const { id, data, selected } = node;
 
-import DragIcon from './DragIcon';
-
-export type NodeData = {
-  label: string;
-};
-
-function MindMapNode({ id, data }: NodeProps<NodeData>) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const updateNodeLabel = useStore((state) => state.updateNodeLabel);
+  // const updateNodeLabel = useStore((state) => state.updateNodeLabel);
 
-  useEffect(() => {
-    setTimeout(() => {
-      inputRef.current?.focus({ preventScroll: true });
-    }, 1);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     inputRef.current?.focus({ preventScroll: true });
+  //   }, 1);
+  // }, []);
 
   useLayoutEffect(() => {
     if (inputRef.current) {
@@ -26,22 +22,23 @@ function MindMapNode({ id, data }: NodeProps<NodeData>) {
   }, [data.label.length]);
 
   return (
-    <>
-      <div className="inputWrapper">
-        <div className="dragHandle">
+    <div className="dragHandle">
+      <div className="inputWrapper" style={{ background: selected ? "blue" : "red", color: "white" }}>
+        {/* <div className="">
           <DragIcon />
-        </div>
-        <input
+        </div> */}
+        {/* <input
           value={data.label}
           onChange={(evt) => updateNodeLabel(id, evt.target.value)}
           className="input"
           ref={inputRef}
-        />
+        /> */}
+        {data.label}
       </div>
 
       <Handle type="target" position={Position.Top} />
       <Handle type="source" position={Position.Top} />
-    </>
+    </div>
   );
 }
 
