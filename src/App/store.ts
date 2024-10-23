@@ -20,7 +20,7 @@ export type RFState = {
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
-  addChildNode: (parentNode: Node) => Node;
+  addChildNode: () => void;
   updateSelectedNode: (nodeId: string) => void;
 };
 
@@ -30,8 +30,7 @@ const useStore = create<RFState>((set, get) => ({
       id: "root",
       type: "mindmap",
       data: { label: "React Flow Mind Map" },
-      position: { x: 0, y: 0 },
-      height: 100
+      position: { x: 0, y: 0 }
     }
     // {
     //   id: "child1",
@@ -75,7 +74,8 @@ const useStore = create<RFState>((set, get) => ({
       selectedNode: get().nodes.find((node) => node.id === nodeId)
     });
   },
-  addChildNode: (parentNode: Node) => {
+  addChildNode: () => {
+    const parentNode = get().selectedNode!;
     const existingChildren = get().nodes.filter((node) => node.parentNode === parentNode.id);
     const childCount = existingChildren.length;
 
@@ -83,9 +83,8 @@ const useStore = create<RFState>((set, get) => ({
       id: nanoid(),
       type: "mindmap",
       data: { label: `Node ${get().nodes.length}` },
-      position: { x: parentNode.width! + 100, y: 22 + childCount * 75 },
-      parentNode: parentNode.id,
-      height: 100
+      position: { x: parentNode.width! + 100, y: 22 + childCount * 50 },
+      parentNode: parentNode.id
     };
 
     const newEdge: Edge = {
@@ -98,19 +97,16 @@ const useStore = create<RFState>((set, get) => ({
       const updatedNodes = state.nodes.map((node) => {
         if (node.parentNode === parentNode.id) {
           // Move existing children up
-          return { ...node, position: { ...node.position, y: node.position.y - 75 } };
+          return { ...node, position: { x: node.position.x, y: node.position.y - 50 } };
         }
         return node;
       });
 
       return {
         nodes: [...updatedNodes, newNode],
-        edges: [...state.edges, newEdge],
-        selectedNode: newNode
+        edges: [...state.edges, newEdge]
       };
     });
-
-    return newNode;
   }
 }));
 

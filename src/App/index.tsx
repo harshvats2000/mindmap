@@ -54,10 +54,14 @@ function Flow() {
     () => {
       if (!selectedNode) return;
 
-      addChildNode(selectedNode);
+      addChildNode();
     },
     { preventDefault: true }
   );
+
+  useEffect(() => {
+    updateSelectedNode(nodes[nodes.length - 1].id);
+  }, [nodes]);
 
   return (
     <ReactFlow
