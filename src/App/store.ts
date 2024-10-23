@@ -82,8 +82,8 @@ const useStore = create<RFState>((set, get) => ({
     const newNode: Node = {
       id: nanoid(),
       type: "mindmap",
-      data: { label: "New Node" },
-      position: { x: 300, y: childCount * 150 },
+      data: { label: `Node ${get().nodes.length}` },
+      position: { x: parentNode.width! + 100, y: 22 + childCount * 75 },
       parentNode: parentNode.id,
       height: 100
     };

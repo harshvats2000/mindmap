@@ -31,7 +31,7 @@ const edgeTypes = {
 
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
 
-const connectionLineStyle = { stroke: "#000", strokeWidth: 3 };
+const connectionLineStyle = { stroke: "#555555", strokeWidth: 2 };
 const defaultEdgeOptions = { style: connectionLineStyle, type: "mindmap" };
 
 function Flow() {
