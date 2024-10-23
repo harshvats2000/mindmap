@@ -22,6 +22,7 @@ export type RFState = {
   updateNodeLabel: (nodeId: string, label: string) => void;
   addChildNode: () => void;
   updateSelectedNode: (nodeId: string) => void;
+  deleteNode: () => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -106,6 +107,11 @@ const useStore = create<RFState>((set, get) => ({
         nodes: [...updatedNodes, newNode],
         edges: [...state.edges, newEdge]
       };
+    });
+  },
+  deleteNode: () => {
+    set({
+      nodes: get().nodes.filter((node) => node.id !== get().selectedNode?.id)
     });
   }
 }));

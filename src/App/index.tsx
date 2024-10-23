@@ -36,7 +36,7 @@ const defaultEdgeOptions = { style: connectionLineStyle, type: "mindmap" };
 
 function Flow() {
   const store = useStoreApi();
-  const { nodes, edges, onNodesChange, onEdgesChange, addChildNode, updateSelectedNode, selectedNode } =
+  const { nodes, edges, onNodesChange, onEdgesChange, addChildNode, updateSelectedNode, selectedNode, deleteNode } =
     useStore(selector);
   // const { project } = useReactFlow();
   // const connectingNodeId = useRef<string | null>(null);
@@ -48,13 +48,22 @@ function Flow() {
     // updateNodeLabel(node.id, "test");
   };
 
-  // Add this hook to handle the Tab key press
   useHotkeys(
     "tab",
     () => {
       if (!selectedNode) return;
 
       addChildNode();
+    },
+    { preventDefault: true }
+  );
+
+  useHotkeys(
+    "backspace",
+    () => {
+      if (!selectedNode) return;
+
+      deleteNode();
     },
     { preventDefault: true }
   );
@@ -79,8 +88,8 @@ function Flow() {
       defaultViewport={defaultViewport}
       onNodeClick={onNodeClick}
       nodesFocusable
-      deleteKeyCode={"Backspace"}
       disableKeyboardA11y={true}
+      deleteKeyCode={""}
       // fitView
     >
       <Background />
