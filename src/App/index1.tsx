@@ -1,5 +1,4 @@
-// @ts-nocheck
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ReactFlow,
   addEdge,
@@ -13,17 +12,18 @@ import {
   Background
 } from "@xyflow/react";
 import { useHotkeys } from "react-hotkeys-hook";
-import dagre from "@dagrejs/dagre";
+import dagre, { Edge } from "@dagrejs/dagre";
 
 import "../index.css";
 import "@xyflow/react/dist/style.css";
+import { TextUpdaterNode } from "./components/node";
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
 const nodeWidth = 172;
 const nodeHeight = 36;
 
-const getLayoutedElements = (nodes, edges, direction = "LR") => {
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = "LR") => {
   const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
@@ -31,7 +31,7 @@ const getLayoutedElements = (nodes, edges, direction = "LR") => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
   });
 
-  edges.forEach((edge) => {
+  edges.forEach((edge: any) => {
     dagreGraph.setEdge(edge.source, edge.target);
   });
 
@@ -61,8 +61,8 @@ const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
   [
     {
       id: "1",
-      type: "input",
-      data: { label: "input" },
+      type: "textUpdater",
+      data: { label: "Hello" },
       position: { x: 0, y: 0 }
     }
   ],
@@ -70,13 +70,15 @@ const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
 );
 
 const Flow = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes as Node[]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges as any);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const ReactFlowInstance = useReactFlow();
+  const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge({ ...params, type: ConnectionLineType.SmoothStep, animated: true }, eds)),
+    (params: any) =>
+      setEdges((eds) => addEdge({ ...params, type: ConnectionLineType.SmoothStep, animated: true }, eds)),
     []
   );
 
@@ -94,13 +96,24 @@ const Flow = () => {
     setSelectedNode(node);
   }, []);
 
+  const onNodeLabelChange = useCallback(
+    (nodeId: string, newLabel: string) => {
+      setNodes((prevNodes) =>
+        prevNodes.map((node) => (node.id === nodeId ? { ...node, data: { ...node.data, label: newLabel } } : node))
+      );
+    },
+    [setNodes]
+  );
+
   const addNodeOnTab = useCallback(() => {
     if (selectedNode) {
+      const newNodeId = `node-${nodes.length + 1}`;
+      const newNodeLabel = `Node ${nodes.length + 1}`;
       const newNode: Node = {
-        id: `node-${nodes.length + 1}`,
-        data: { label: `Node ${nodes.length + 1}` },
-        position: { x: 0, y: 0 }, // Position will be adjusted by layout
-        type: "default"
+        id: newNodeId,
+        data: { label: newNodeLabel, onNodeLabelChange },
+        position: { x: 0, y: 0 },
+        type: "textUpdater"
       };
 
       const newEdge = {
@@ -114,12 +127,12 @@ const Flow = () => {
       const updatedNodes = [...nodes, newNode];
       const updatedEdges = [...edges, newEdge];
 
-      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(updatedNodes, updatedEdges);
+      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(updatedNodes, updatedEdges as any);
 
-      setNodes(layoutedNodes);
-      setEdges(layoutedEdges);
+      setNodes(layoutedNodes as Node[]);
+      setEdges(layoutedEdges as any);
     }
-  }, [selectedNode, nodes, edges, setNodes, setEdges]);
+  }, [selectedNode, nodes, edges, setNodes, setEdges, onNodeLabelChange]);
 
   useHotkeys(
     "tab",
@@ -132,8 +145,17 @@ const Flow = () => {
   );
 
   useEffect(() => {
-    ReactFlowInstance.fitView({ duration: 1000 });
+    ReactFlowInstance.fitView({ duration: 500 });
   }, [nodes]);
+
+  useEffect(() => {
+    setNodes((nodes) =>
+      nodes.map((node) => ({
+        ...node,
+        data: { ...node.data, onNodeLabelChange }
+      }))
+    );
+  }, [onNodeLabelChange]);
 
   return (
     <ReactFlow
@@ -144,6 +166,8 @@ const Flow = () => {
       onConnect={onConnect}
       onNodeClick={onNodeClick}
       connectionLineType={ConnectionLineType.SmoothStep}
+      nodeTypes={nodeTypes}
+      //   defaultViewport={{ x: 0, y: 0, zoom: 0.1 }}
       fitView
       draggable={false}
     >
