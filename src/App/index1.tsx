@@ -9,15 +9,14 @@ import {
   useEdgesState,
   Node,
   useReactFlow,
-  ReactFlowProvider
+  ReactFlowProvider,
+  Background
 } from "@xyflow/react";
 import { useHotkeys } from "react-hotkeys-hook";
 import dagre from "@dagrejs/dagre";
 
 import "../index.css";
 import "@xyflow/react/dist/style.css";
-
-import { initialNodes, initialEdges } from "./nodes-edges";
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
@@ -58,7 +57,17 @@ const getLayoutedElements = (nodes, edges, direction = "LR") => {
   return { nodes: newNodes, edges };
 };
 
-const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(initialNodes, initialEdges);
+const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+  [
+    {
+      id: "1",
+      type: "input",
+      data: { label: "input" },
+      position: { x: 0, y: 0 }
+    }
+  ],
+  []
+);
 
 const Flow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
@@ -70,6 +79,7 @@ const Flow = () => {
     (params) => setEdges((eds) => addEdge({ ...params, type: ConnectionLineType.SmoothStep, animated: true }, eds)),
     []
   );
+
   //   const onLayout = useCallback(
   //     (direction) => {
   //       const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges, direction);
@@ -122,7 +132,7 @@ const Flow = () => {
   );
 
   useEffect(() => {
-    ReactFlowInstance.fitView();
+    ReactFlowInstance.fitView({ duration: 1000 });
   }, [nodes]);
 
   return (
@@ -135,16 +145,18 @@ const Flow = () => {
       onNodeClick={onNodeClick}
       connectionLineType={ConnectionLineType.SmoothStep}
       fitView
+      draggable={false}
     >
-      <Panel position="top-right">
-        {/* <button onClick={() => onLayout("TB")}>vertical layout</button>
-        <button onClick={() => onLayout("LR")}>horizontal layout</button> */}
+      <Background />
+      {/* <Panel position="top-right">
+        <button onClick={() => onLayout("TB")}>vertical layout</button>
+        <button onClick={() => onLayout("LR")}>horizontal layout</button>
       </Panel>
       {selectedNode && (
         <Panel position="bottom-center">
           <div>Selected Node: {selectedNode.id}</div>
         </Panel>
-      )}
+      )} */}
     </ReactFlow>
   );
 };
