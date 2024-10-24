@@ -6,11 +6,9 @@ import {
   OnNodesChange,
   OnEdgesChange,
   applyNodeChanges,
-  applyEdgeChanges,
-  XYPosition
+  applyEdgeChanges
 } from "@xyflow/react";
 import { create } from "zustand";
-import { nanoid } from "nanoid/non-secure";
 import { NodeData } from "./types";
 import dagre from "@dagrejs/dagre";
 

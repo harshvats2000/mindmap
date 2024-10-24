@@ -53,9 +53,6 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   useEffect(() => {
     if (isSelected) {
       setIsEditing(true);
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
     }
   }, [selectedNode]);
 
@@ -66,7 +63,6 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
         {isEditing ? (
           <input
             ref={inputRef}
-            id="text"
             name="text"
             value={data.label}
             onChange={onChange}
@@ -135,31 +131,33 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
         >
           +
         </div>
-        <div
-          style={{
-            width: "1rem",
-            height: "1rem",
-            background: isSelected ? "white" : btnBgColor,
-            color: isSelected ? "#0066ff" : btnTextColor,
-            borderRadius: 50,
-            display: "grid",
-            placeItems: "center",
-            fontSize: "0.8rem",
-            boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
-            position: "absolute",
-            top: "4px",
-            right: 25,
-            lineHeight: "0",
-            cursor: "pointer"
-          }}
-          onClick={() => {
-            deleteNodeAndChildren(id);
-          }}
-        >
-          -
-        </div>
+        {id !== "root" && (
+          <div
+            style={{
+              width: "1rem",
+              height: "1rem",
+              background: isSelected ? "white" : btnBgColor,
+              color: isSelected ? "#0066ff" : btnTextColor,
+              borderRadius: 50,
+              display: "grid",
+              placeItems: "center",
+              fontSize: "0.8rem",
+              boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
+              position: "absolute",
+              top: "4px",
+              right: 25,
+              lineHeight: "0",
+              cursor: "pointer"
+            }}
+            onClick={() => {
+              deleteNodeAndChildren(id);
+            }}
+          >
+            -
+          </div>
+        )}
       </div>
-      <Handle type="source" position={Position.Right} id="a" style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
     </div>
   );
 }
