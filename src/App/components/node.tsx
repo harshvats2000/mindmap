@@ -1,15 +1,20 @@
 import { useCallback, useState } from "react";
 import { Handle, Position } from "@xyflow/react";
+import useStore from "../store";
+import { NodeData, selector } from "../types";
 
-export function TextUpdaterNode({ data, id }: { data: any; id: string }) {
+export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const [isEditing, setIsEditing] = useState(false);
+  const { updateNodeLabel, updateSelectedNode, selectedNode } = useStore(selector);
+
+  console.log("hey");
 
   const onChange = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = evt.target.value;
-      data.onNodeLabelChange(id, newValue);
+      updateNodeLabel(id, newValue);
     },
-    [data, id]
+    [updateNodeLabel, id]
   );
 
   const onDoubleClick = useCallback((e: React.MouseEvent) => {
@@ -21,8 +26,12 @@ export function TextUpdaterNode({ data, id }: { data: any; id: string }) {
     setIsEditing(false);
   }, []);
 
+  const onSingleClick = useCallback(() => {
+    updateSelectedNode(id);
+  }, []);
+
   return (
-    <div onDoubleClick={onDoubleClick}>
+    <div onDoubleClick={onDoubleClick} onClick={onSingleClick}>
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
       <div style={{ minWidth: 150 }}>
         {isEditing ? (
@@ -36,7 +45,7 @@ export function TextUpdaterNode({ data, id }: { data: any; id: string }) {
             className="nodrag"
             style={{
               border: "none",
-              background: "black",
+              background: selectedNode?.id === id ? "#0066ff" : "black",
               color: "white",
               padding: "6px 10px",
               borderRadius: 10,
@@ -47,7 +56,7 @@ export function TextUpdaterNode({ data, id }: { data: any; id: string }) {
           <div
             style={{
               border: "none",
-              background: "black",
+              background: selectedNode?.id === id ? "#0066ff" : "black",
               color: "white",
               padding: "6px 10px",
               borderRadius: 10,

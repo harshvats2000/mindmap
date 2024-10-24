@@ -8,10 +8,50 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
   XYPosition
-} from "reactflow";
-import create from "zustand";
+} from "@xyflow/react";
+import { create } from "zustand";
 import { nanoid } from "nanoid/non-secure";
 import { NodeData } from "./types";
+import dagre from "@dagrejs/dagre";
+
+const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+
+const nodeWidth = 172;
+const nodeHeight = 36;
+
+const getLayoutedElements = (nodes: Node<NodeData>[], edges: Edge[], direction = "LR") => {
+  const isHorizontal = direction === "LR";
+  dagreGraph.setGraph({ rankdir: direction });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge: any) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const newNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    const newNode = {
+      ...node,
+      targetPosition: isHorizontal ? "left" : "top",
+      sourcePosition: isHorizontal ? "right" : "bottom",
+      // We are shifting the dagre node position (anchor=center center) to the top left
+      // so it matches the React Flow node anchor point (top left).
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2
+      }
+    };
+
+    return newNode;
+  });
+
+  return { nodes: newNodes, edges };
+};
 
 export type RFState = {
   nodes: Node<NodeData>[];
@@ -20,100 +60,86 @@ export type RFState = {
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
-  addChildNode: () => void;
   updateSelectedNode: (nodeId: string) => void;
-  deleteNode: () => void;
+  addNodeOnTab: () => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
   nodes: [
     {
       id: "root",
-      type: "mindmap",
+      type: "textUpdater",
       data: { label: "React Flow Mind Map" },
       position: { x: 0, y: 0 }
     }
-    // {
-    //   id: "child1",
-    //   type: "mindmap",
-    //   data: { label: "React Flow Mind Map" },
-    //   position: { x: 300, y: 0 }
-    // },
-    // {
-    //   id: "child2",
-    //   type: "mindmap",
-    //   data: { label: "React Flow Mind Map" },
-    //   position: { x: 300, y: 300 }
-    // }
   ],
   edges: [],
-  selectedNode: null,
+  selectedNode: null, // Initialize as null
   onNodesChange: (changes: NodeChange[]) => {
     set({
-      nodes: applyNodeChanges(changes, get().nodes)
+      nodes: getLayoutedElements(applyNodeChanges(changes, get().nodes) as Node<NodeData>[], get().edges)
+        .nodes as Node<NodeData>[]
     });
   },
   onEdgesChange: (changes: EdgeChange[]) => {
     set({
-      edges: applyEdgeChanges(changes, get().edges)
+      edges: getLayoutedElements(get().nodes, applyEdgeChanges(changes, get().edges)).edges as Edge[]
     });
   },
   updateNodeLabel: (nodeId: string, label: string) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
-          // it's important to create a new object here, to inform React Flow about the changes
-          node.data = { ...node.data, label };
+          // Update the label in the existing node's data
+          node.data.label = label;
         }
-
         return node;
       })
     });
   },
   updateSelectedNode: (nodeId: string) => {
     set({
-      selectedNode: get().nodes.find((node) => node.id === nodeId)
+      selectedNode: get().nodes.find((node) => node.id === nodeId) || null
     });
   },
-  addChildNode: () => {
-    const parentNode = get().selectedNode!;
-    const existingChildren = get().nodes.filter((node) => node.parentNode === parentNode.id);
-    const childCount = existingChildren.length;
-
-    const newNode: Node = {
-      id: nanoid(),
-      type: "mindmap",
-      data: { label: `Node ${get().nodes.length}` },
-      position: { x: parentNode.width! + 100, y: 22 + childCount * 50 },
-      parentNode: parentNode.id
-    };
-
-    const newEdge: Edge = {
-      id: nanoid(),
-      source: parentNode.id,
-      target: newNode.id
-    };
-
-    set((state) => {
-      const updatedNodes = state.nodes.map((node) => {
-        if (node.parentNode === parentNode.id) {
-          // Move existing children up
-          return { ...node, position: { x: node.position.x, y: node.position.y - 50 } };
-        }
-        return node;
-      });
-
-      return {
-        nodes: [...updatedNodes, newNode],
-        edges: [...state.edges, newEdge]
+  addNodeOnTab: () => {
+    if (get().selectedNode) {
+      const newNodeId = `node-${get().nodes.length + 1}`;
+      const newNodeLabel = `Node ${get().nodes.length + 1}`;
+      const newNode: Node = {
+        id: newNodeId,
+        data: { label: newNodeLabel, onNodeLabelChange: get().updateNodeLabel },
+        position: { x: 0, y: 0 },
+        type: "textUpdater"
       };
-    });
-  },
-  deleteNode: () => {
-    set({
-      nodes: get().nodes.filter((node) => node.id !== get().selectedNode?.id)
-    });
+
+      const newEdge = {
+        id: `edge-${get().edges.length + 1}`,
+        source: get().selectedNode?.id,
+        target: newNode.id,
+        type: "smoothstep",
+        animated: true
+      };
+
+      const updatedNodes = [...get().nodes, newNode];
+      const updatedEdges = [...get().edges, newEdge];
+
+      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+        updatedNodes as Node<NodeData>[],
+        updatedEdges as Edge[]
+      );
+
+      set({
+        nodes: layoutedNodes as Node<NodeData>[],
+        edges: layoutedEdges as Edge[]
+      });
+    }
   }
+}));
+
+// After creating the store, set the initial selected node
+useStore.setState((state) => ({
+  selectedNode: state.nodes[0]
 }));
 
 export default useStore;
