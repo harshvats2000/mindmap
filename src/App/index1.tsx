@@ -82,15 +82,15 @@ const Flow = () => {
     []
   );
 
-  //   const onLayout = useCallback(
-  //     (direction) => {
-  //       const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges, direction);
+  // const onLayout = useCallback(
+  //   (direction: string) => {
+  //     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges as any, direction);
 
-  //       setNodes([...layoutedNodes]);
-  //       setEdges([...layoutedEdges]);
-  //     },
-  //     [nodes, edges]
-  //   );
+  //     setNodes([...layoutedNodes] as Node[]);
+  //     setEdges([...layoutedEdges] as any);
+  //   },
+  //   [nodes, edges]
+  // );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
@@ -167,16 +167,19 @@ const Flow = () => {
       onNodeClick={onNodeClick}
       connectionLineType={ConnectionLineType.SmoothStep}
       nodeTypes={nodeTypes}
+      // onNodeDoubleClick={(node, event) => {
+      //   console.log("node", node);
+      // }}
       //   defaultViewport={{ x: 0, y: 0, zoom: 0.1 }}
       fitView
-      draggable={false}
+      // draggable={false}
     >
       <Background />
       {/* <Panel position="top-right">
         <button onClick={() => onLayout("TB")}>vertical layout</button>
         <button onClick={() => onLayout("LR")}>horizontal layout</button>
-      </Panel>
-      {selectedNode && (
+      </Panel> */}
+      {/* {selectedNode && (
         <Panel position="bottom-center">
           <div>Selected Node: {selectedNode.id}</div>
         </Panel>
