@@ -23,8 +23,7 @@ body,
   box-shadow: none;
 }
 
-.download-btn {
-  background-color: #152e50;
+.btn {
   color: white;
   padding: 10px;
   border-radius: 10px;

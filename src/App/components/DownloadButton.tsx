@@ -3,6 +3,7 @@ import { Panel, useReactFlow, getNodesBounds, getViewportForBounds } from "@xyfl
 import { toPng } from "html-to-image";
 import { selector } from "../types";
 import useStore, { RFState } from "../store";
+import { darkenHexColor } from "../helpers";
 
 function downloadImage(dataUrl: string) {
   const a = document.createElement("a");
@@ -39,7 +40,7 @@ export function DownloadButton() {
 
   return (
     <Panel position="top-right">
-      <button className="download-btn" onClick={onClick}>
+      <button className="btn" onClick={onClick} style={{ backgroundColor: darkenHexColor(bgColor, 20) }}>
         Download Image
       </button>
     </Panel>

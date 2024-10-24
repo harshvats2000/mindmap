@@ -3,6 +3,7 @@ import { selector } from "../types";
 import useStore, { RFState } from "../store";
 import { ColorPicker, useColor } from "react-color-palette";
 import "react-color-palette/css";
+import { darkenHexColor } from "../helpers";
 
 const BgColorPicker = () => {
   const { bgColor, updateBgColor } = useStore<RFState>(selector);
@@ -17,7 +18,11 @@ const BgColorPicker = () => {
     <div style={{ zIndex: 5, position: "absolute", top: 10, left: 10 }}>
       {isColorPickerOpen ? (
         <div>
-          <button className="download-btn" onClick={() => setIsColorPickerOpen(false)}>
+          <button
+            className="btn"
+            style={{ backgroundColor: darkenHexColor(bgColor, 20) }}
+            onClick={() => setIsColorPickerOpen(false)}
+          >
             Close Picker
           </button>
           <div>
@@ -25,7 +30,11 @@ const BgColorPicker = () => {
           </div>
         </div>
       ) : (
-        <button className="download-btn" onClick={() => setIsColorPickerOpen(true)}>
+        <button
+          className="btn"
+          style={{ backgroundColor: darkenHexColor(bgColor, 20) }}
+          onClick={() => setIsColorPickerOpen(true)}
+        >
           Background Color
         </button>
       )}
