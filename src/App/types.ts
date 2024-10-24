@@ -12,5 +12,5 @@ export const selector = (state: RFState) => ({
   updateSelectedNode: state.updateSelectedNode,
   updateNodeLabel: state.updateNodeLabel,
   selectedNode: state.selectedNode,
-  addNodeOnTab: state.addNodeOnTab
+  addNode: state.addNode
 });

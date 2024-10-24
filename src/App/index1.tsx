@@ -20,51 +20,23 @@ import useStore, { RFState } from "./store";
 import { selector } from "./types";
 
 const Flow = () => {
-  const { nodes, onNodesChange, edges, onEdgesChange, addNodeOnTab } = useStore<RFState>(selector);
+  const { nodes, onNodesChange, edges, onEdgesChange, addNode } = useStore<RFState>(selector);
   const ReactFlowInstance = useReactFlow();
   const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
-
-  // const onConnect = useCallback(
-  //   (params: any) =>
-  //     setEdges((eds) => addEdge({ ...params, type: ConnectionLineType.SmoothStep, animated: true }, eds)),
-  //   []
-  // );
-
-  // const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-  //   setSelectedNode(node);
-  // }, []);
-
-  // const onNodeLabelChange = useCallback(
-  //   (nodeId: string, newLabel: string) => {
-  //     setNodes((prevNodes) =>
-  //       prevNodes.map((node) => (node.id === nodeId ? { ...node, data: { ...node.data, label: newLabel } } : node))
-  //     );
-  //   },
-  //   [setNodes]
-  // );
 
   useHotkeys(
     "tab",
     (event) => {
       event.preventDefault();
-      addNodeOnTab();
+      addNode();
     },
     { enableOnFormTags: true },
-    [addNodeOnTab]
+    [addNode]
   );
 
   useEffect(() => {
     ReactFlowInstance.fitView({ duration: 500 });
   }, [nodes]);
-
-  // useEffect(() => {
-  //   setNodes((nodes) =>
-  //     nodes.map((node) => ({
-  //       ...node,
-  //       data: { ...node.data, onNodeLabelChange }
-  //     }))
-  //   );
-  // }, [onNodeLabelChange]);
 
   return (
     <ReactFlow
@@ -84,11 +56,6 @@ const Flow = () => {
       // draggable={false}
     >
       <Background />
-      {/* {selectedNode && (
-        <Panel position="bottom-center">
-          <div>Selected Node: {selectedNode.id}</div>
-        </Panel>
-      )} */}
     </ReactFlow>
   );
 };

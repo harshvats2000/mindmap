@@ -61,7 +61,7 @@ export type RFState = {
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
   updateSelectedNode: (nodeId: string) => void;
-  addNodeOnTab: () => void;
+  addNode: () => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -102,7 +102,7 @@ const useStore = create<RFState>((set, get) => ({
       selectedNode: get().nodes.find((node) => node.id === nodeId) || null
     });
   },
-  addNodeOnTab: () => {
+  addNode: () => {
     if (get().selectedNode) {
       const newNodeId = `node-${get().nodes.length + 1}`;
       const newNodeLabel = `Node ${get().nodes.length + 1}`;
