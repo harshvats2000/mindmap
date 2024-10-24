@@ -18,7 +18,7 @@ const imageHeight = 768;
 
 export function DownloadButton() {
   const { getNodes } = useReactFlow();
-  const { bgColor } = useStore<RFState>(selector);
+  const { bgColor, toggleActionButton } = useStore<RFState>(selector);
   const onClick = () => {
     // we calculate a transform for the nodes so that all nodes are visible
     // we then overwrite the transform of the `.react-flow__viewport` element
@@ -26,6 +26,7 @@ export function DownloadButton() {
     const nodesBounds = getNodesBounds(getNodes());
     const viewport = getViewportForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2, 0);
 
+    toggleActionButton();
     toPng(document.querySelector(".react-flow__viewport") as HTMLElement, {
       backgroundColor: bgColor,
       width: imageWidth,
@@ -35,7 +36,9 @@ export function DownloadButton() {
         height: imageHeight.toString(),
         transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`
       }
-    }).then(downloadImage);
+    })
+      .then(downloadImage)
+      .finally(() => toggleActionButton());
   };
 
   return (

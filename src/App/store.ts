@@ -63,6 +63,8 @@ export type RFState = {
   bgColor: string;
   updateBgColor: (color: string) => void;
   deleteNodeAndChildren: (nodeId: string) => void;
+  isActionButtonVisible: boolean;
+  toggleActionButton: () => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -77,6 +79,10 @@ const useStore = create<RFState>((set, get) => ({
   edges: [],
   selectedNode: null,
   bgColor: "#1a365d",
+  isActionButtonVisible: true,
+  toggleActionButton: () => {
+    set({ isActionButtonVisible: !get().isActionButtonVisible });
+  },
   updateBgColor: (color: string) => {
     set({ bgColor: color });
   },

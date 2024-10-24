@@ -7,8 +7,15 @@ import { darkenHexColor } from "../helpers";
 
 export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const [isEditing, setIsEditing] = useState(true);
-  const { updateNodeLabel, updateSelectedNode, selectedNode, addNode, bgColor, deleteNodeAndChildren } =
-    useStore(selector);
+  const {
+    updateNodeLabel,
+    updateSelectedNode,
+    selectedNode,
+    addNode,
+    bgColor,
+    deleteNodeAndChildren,
+    isActionButtonVisible
+  } = useStore(selector);
   const isSelected = selectedNode?.id === id;
   const inputRef = useRef<HTMLInputElement>(null);
   const darkenColor = darkenHexColor(bgColor, 20);
@@ -107,53 +114,58 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
             {data.label}
           </div>
         )}
-        <div
-          style={{
-            width: "1rem",
-            height: "1rem",
-            background: isSelected ? "white" : btnBgColor,
-            color: isSelected ? "#0066ff" : btnTextColor,
-            borderRadius: 50,
-            display: "grid",
-            placeItems: "center",
-            fontSize: "0.8rem",
-            boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
-            position: "absolute",
-            top: "4px",
-            right: 5,
-            lineHeight: "0",
-            cursor: "pointer"
-          }}
-          onClick={() => {
-            updateSelectedNode(id);
-            addNode();
-          }}
-        >
-          +
-        </div>
-        {id !== "root" && (
-          <div
-            style={{
-              width: "1rem",
-              height: "1rem",
-              background: isSelected ? "white" : btnBgColor,
-              color: isSelected ? "#0066ff" : btnTextColor,
-              borderRadius: 50,
-              display: "grid",
-              placeItems: "center",
-              fontSize: "0.8rem",
-              boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
-              position: "absolute",
-              top: "4px",
-              right: 25,
-              lineHeight: "0",
-              cursor: "pointer"
-            }}
-            onClick={() => {
-              deleteNodeAndChildren(id);
-            }}
-          >
-            -
+
+        {isActionButtonVisible && (
+          <div>
+            <div
+              style={{
+                width: "1rem",
+                height: "1rem",
+                background: isSelected ? "white" : btnBgColor,
+                color: isSelected ? "#0066ff" : btnTextColor,
+                borderRadius: 50,
+                display: "grid",
+                placeItems: "center",
+                fontSize: "0.8rem",
+                boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
+                position: "absolute",
+                top: "4px",
+                right: 5,
+                lineHeight: "0",
+                cursor: "pointer"
+              }}
+              onClick={() => {
+                updateSelectedNode(id);
+                addNode();
+              }}
+            >
+              +
+            </div>
+            {id !== "root" && (
+              <div
+                style={{
+                  width: "1rem",
+                  height: "1rem",
+                  background: isSelected ? "white" : btnBgColor,
+                  color: isSelected ? "#0066ff" : btnTextColor,
+                  borderRadius: 50,
+                  display: "grid",
+                  placeItems: "center",
+                  fontSize: "0.8rem",
+                  boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
+                  position: "absolute",
+                  top: "4px",
+                  right: 25,
+                  lineHeight: "0",
+                  cursor: "pointer"
+                }}
+                onClick={() => {
+                  deleteNodeAndChildren(id);
+                }}
+              >
+                -
+              </div>
+            )}
           </div>
         )}
       </div>

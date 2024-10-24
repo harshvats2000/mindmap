@@ -13,11 +13,11 @@ import "@xyflow/react/dist/style.css";
 import { TextUpdaterNode } from "./components/node";
 import useStore, { RFState } from "./store";
 import { selector } from "./types";
-// import { DownloadButton } from "./components/DownloadButton";
-// import BgColorPicker from "./components/ColorPicker";
+import { DownloadButton } from "./components/DownloadButton";
+import BgColorPicker from "./components/ColorPicker";
 
 const Flow = () => {
-  const { nodes, onNodesChange, edges, onEdgesChange, addNode, bgColor, updateBgColor } = useStore<RFState>(selector);
+  const { nodes, onNodesChange, edges, onEdgesChange, addNode, bgColor } = useStore<RFState>(selector);
 
   const ReactFlowInstance = useReactFlow();
   const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
@@ -55,8 +55,8 @@ const Flow = () => {
       // draggable={false}
     >
       <Background bgColor={bgColor} variant={BackgroundVariant.Dots} />
-      {/* <DownloadButton /> */}
-      {/* <BgColorPicker /> */}
+      <DownloadButton />
+      <BgColorPicker />
     </ReactFlow>
     // </div>
   );
