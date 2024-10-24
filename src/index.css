@@ -43,3 +43,9 @@ body,
   /* position: relative; */
   pointer-events: none;
 }
+
+.node-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}

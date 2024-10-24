@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import useStore from "../store";
 import { NodeData, selector } from "../types";
@@ -6,8 +6,6 @@ import { NodeData, selector } from "../types";
 export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const { updateNodeLabel, updateSelectedNode, selectedNode } = useStore(selector);
-
-  console.log("hey");
 
   const onChange = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,10 +28,20 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     updateSelectedNode(id);
   }, []);
 
+  useEffect(() => {
+    setIsEditing(true);
+  }, []);
+
+  useEffect(() => {
+    if (selectedNode?.id !== id) {
+      setIsEditing(false);
+    }
+  }, [selectedNode]);
+
   return (
     <div onDoubleClick={onDoubleClick} onClick={onSingleClick}>
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
-      <div style={{ minWidth: 150 }}>
+      <div style={{ minWidth: 124 }}>
         {isEditing ? (
           <input
             id="text"
@@ -42,14 +50,18 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
             onChange={onChange}
             onBlur={onBlur}
             autoFocus
-            className="nodrag"
+            className="node-input"
             style={{
               border: "none",
               background: selectedNode?.id === id ? "#0066ff" : "black",
               color: "white",
-              padding: "6px 10px",
+              padding: "7px 10px",
+              fontWeight: "normal",
               borderRadius: 10,
-              fontSize: 12
+              fontSize: 10,
+              lineHeight: "normal",
+              margin: 0,
+              letterSpacing: "0.5px"
             }}
           />
         ) : (
@@ -59,9 +71,12 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
               background: selectedNode?.id === id ? "#0066ff" : "black",
               color: "white",
               padding: "6px 10px",
+              fontWeight: "normal",
               borderRadius: 10,
-              fontSize: 12,
-              lineHeight: "normal"
+              fontSize: 10,
+              lineHeight: "normal",
+              margin: 0,
+              letterSpacing: "0.5px"
             }}
           >
             {data.label}

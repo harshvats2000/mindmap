@@ -69,7 +69,7 @@ const useStore = create<RFState>((set, get) => ({
     {
       id: "root",
       type: "textUpdater",
-      data: { label: "React Flow Mind Map" },
+      data: { label: "Hello" },
       position: { x: 0, y: 0 }
     }
   ],
@@ -133,6 +133,8 @@ const useStore = create<RFState>((set, get) => ({
         nodes: layoutedNodes as Node<NodeData>[],
         edges: layoutedEdges as Edge[]
       });
+
+      get().updateSelectedNode(newNode.id);
     }
   }
 }));
