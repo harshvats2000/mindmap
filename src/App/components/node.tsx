@@ -56,7 +56,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   return (
     <div onDoubleClick={onDoubleClick} onClick={onSingleClick}>
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
-      <div style={{ minWidth: 150, display: "grid", placeItems: "center", position: "relative" }}>
+      <div style={{ minWidth: 100, display: "grid", placeItems: "center", position: "relative" }}>
         {isEditing ? (
           <input
             ref={inputRef}
@@ -79,12 +79,13 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
               margin: 0,
               letterSpacing: "0px",
               fontFamily: "monospace",
-              width: "100%"
+              width: "100px"
             }}
           />
         ) : (
           <div
             style={{
+              overflow: "scroll",
               border: "none",
               background: selectedNode?.id === id ? "#0066ff" : "black",
               color: "white",
@@ -96,7 +97,9 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
               margin: 0,
               letterSpacing: "0px",
               fontFamily: "monospace",
-              width: "100%"
+              width: "100px",
+              maxWidth: "100px",
+              whiteSpace: "nowrap"
             }}
           >
             {data.label}
@@ -115,7 +118,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
             boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
             position: "absolute",
             top: "4px",
-            right: -15,
+            right: 5,
             lineHeight: "0",
             cursor: "pointer"
           }}

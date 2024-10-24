@@ -18,6 +18,7 @@ import "@xyflow/react/dist/style.css";
 import { TextUpdaterNode } from "./components/node";
 import useStore, { RFState } from "./store";
 import { selector } from "./types";
+import { DownloadButton } from "./components/DownloadButton";
 
 const Flow = () => {
   const { nodes, onNodesChange, edges, onEdgesChange, addNode } = useStore<RFState>(selector);
@@ -56,6 +57,7 @@ const Flow = () => {
       // draggable={false}
     >
       <Background />
+      <DownloadButton />
     </ReactFlow>
   );
 };
