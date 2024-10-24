@@ -14,10 +14,10 @@ import { nanoid } from "nanoid/non-secure";
 import { NodeData } from "./types";
 import dagre from "@dagrejs/dagre";
 
-const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+const dagreGraph = new dagre.graphlib.Graph({ compound: false }).setDefaultEdgeLabel(() => ({}));
 
-const nodeWidth = 172;
-const nodeHeight = 36;
+const nodeWidth = 150;
+const nodeHeight = 1;
 
 const getLayoutedElements = (nodes: Node<NodeData>[], edges: Edge[], direction = "LR") => {
   const isHorizontal = direction === "LR";
