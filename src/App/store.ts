@@ -62,6 +62,8 @@ export type RFState = {
   updateNodeLabel: (nodeId: string, label: string) => void;
   updateSelectedNode: (nodeId: string) => void;
   addNode: () => void;
+  bgColor: string;
+  updateBgColor: (color: string) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -74,7 +76,11 @@ const useStore = create<RFState>((set, get) => ({
     }
   ],
   edges: [],
-  selectedNode: null, // Initialize as null
+  selectedNode: null,
+  bgColor: "#1a365d",
+  updateBgColor: (color: string) => {
+    set({ bgColor: color });
+  },
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: getLayoutedElements(applyNodeChanges(changes, get().nodes) as Node<NodeData>[], get().edges)

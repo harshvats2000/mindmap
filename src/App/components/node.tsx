@@ -2,12 +2,31 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import useStore from "../store";
 import { NodeData, selector } from "../types";
-import { useHotkeys } from "react-hotkeys-hook";
+// import { useHotkeys } from "react-hotkeys-hook";
+
+function darkenHexColor(hex: string, percent: number) {
+  // Remove the hash at the start if it's there
+  hex = hex.replace(/^#/, "");
+
+  // Parse the r, g, b values
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
+
+  // Calculate the darker color
+  r = Math.floor(r * (1 - percent / 100));
+  g = Math.floor(g * (1 - percent / 100));
+  b = Math.floor(b * (1 - percent / 100));
+
+  // Convert back to hex and return
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
 
 export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const [isEditing, setIsEditing] = useState(true);
-  const { updateNodeLabel, updateSelectedNode, selectedNode, addNode } = useStore(selector);
+  const { updateNodeLabel, updateSelectedNode, selectedNode, addNode, bgColor } = useStore(selector);
   const inputRef = useRef<HTMLInputElement>(null);
+  const darkenColor = darkenHexColor(bgColor, 20);
 
   const onChange = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +88,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
             className="node-input"
             style={{
               border: "none",
-              background: selectedNode?.id === id ? "#0066ff" : "black",
+              background: selectedNode?.id === id ? "#0066ff" : darkenColor,
               color: "white",
               padding: "6px 10px",
               fontWeight: "normal",
@@ -87,7 +106,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
             style={{
               overflow: "scroll",
               border: "none",
-              background: selectedNode?.id === id ? "#0066ff" : "black",
+              background: selectedNode?.id === id ? "#0066ff" : darkenColor,
               color: "white",
               padding: "6px 10px",
               fontWeight: "normal",

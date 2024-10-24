@@ -1,27 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  ReactFlow,
-  addEdge,
-  ConnectionLineType,
-  Panel,
-  useNodesState,
-  useEdgesState,
-  Node,
-  useReactFlow,
-  ReactFlowProvider,
-  Background
-} from "@xyflow/react";
+import React, { useEffect, useMemo, useState } from "react";
+import { ReactFlow, ConnectionLineType, useReactFlow, ReactFlowProvider, Background } from "@xyflow/react";
 import { useHotkeys } from "react-hotkeys-hook";
-
 import "../index.css";
 import "@xyflow/react/dist/style.css";
 import { TextUpdaterNode } from "./components/node";
 import useStore, { RFState } from "./store";
 import { selector } from "./types";
 import { DownloadButton } from "./components/DownloadButton";
+import BgColorPicker from "./components/ColorPicker";
 
 const Flow = () => {
-  const { nodes, onNodesChange, edges, onEdgesChange, addNode } = useStore<RFState>(selector);
+  const { nodes, onNodesChange, edges, onEdgesChange, addNode, bgColor, updateBgColor } = useStore<RFState>(selector);
+
   const ReactFlowInstance = useReactFlow();
   const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
 
@@ -56,8 +46,9 @@ const Flow = () => {
       fitView
       // draggable={false}
     >
-      <Background />
+      <Background bgColor={bgColor} />
       <DownloadButton />
+      <BgColorPicker />
     </ReactFlow>
   );
 };
