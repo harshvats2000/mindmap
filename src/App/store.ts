@@ -64,6 +64,7 @@ export type RFState = {
   addNode: () => void;
   bgColor: string;
   updateBgColor: (color: string) => void;
+  deleteNodeAndChildren: (nodeId: string) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -140,8 +141,32 @@ const useStore = create<RFState>((set, get) => ({
         edges: layoutedEdges as Edge[]
       });
 
-      get().updateSelectedNode(newNode.id);
+      // Might have race condition here
+      setTimeout(() => {
+        get().updateSelectedNode(newNode.id);
+      }, 10);
     }
+  },
+  deleteNodeAndChildren: (nodeId: string) => {
+    const nodesToDelete = new Set<string>();
+    const edgesToDelete = new Set<string>();
+
+    const traverseAndMarkForDeletion = (currentNodeId: string) => {
+      nodesToDelete.add(currentNodeId);
+      get().edges.forEach((edge) => {
+        if (edge.source === currentNodeId) {
+          edgesToDelete.add(edge.id);
+          traverseAndMarkForDeletion(edge.target);
+        }
+      });
+    };
+
+    traverseAndMarkForDeletion(nodeId);
+
+    set({
+      nodes: get().nodes.filter((node) => !nodesToDelete.has(node.id)),
+      edges: get().edges.filter((edge) => !edgesToDelete.has(edge.id))
+    });
   }
 }));
 

@@ -14,5 +14,6 @@ export const selector = (state: RFState) => ({
   selectedNode: state.selectedNode,
   addNode: state.addNode,
   bgColor: state.bgColor,
-  updateBgColor: state.updateBgColor
+  updateBgColor: state.updateBgColor,
+  deleteNodeAndChildren: state.deleteNodeAndChildren
 });

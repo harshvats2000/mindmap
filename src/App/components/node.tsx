@@ -7,9 +7,13 @@ import { darkenHexColor } from "../helpers";
 
 export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const [isEditing, setIsEditing] = useState(true);
-  const { updateNodeLabel, updateSelectedNode, selectedNode, addNode, bgColor } = useStore(selector);
+  const { updateNodeLabel, updateSelectedNode, selectedNode, addNode, bgColor, deleteNodeAndChildren } =
+    useStore(selector);
+  const isSelected = selectedNode?.id === id;
   const inputRef = useRef<HTMLInputElement>(null);
   const darkenColor = darkenHexColor(bgColor, 20);
+  const btnBgColor = darkenHexColor(bgColor, 60);
+  const btnTextColor = darkenHexColor(bgColor, 10);
 
   const onChange = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,7 +51,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   // );
 
   useEffect(() => {
-    if (selectedNode?.id === id) {
+    if (isSelected) {
       setIsEditing(true);
       setTimeout(() => {
         inputRef.current?.focus();
@@ -71,7 +75,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
             className="node-input"
             style={{
               border: "none",
-              background: selectedNode?.id === id ? "#0066ff" : darkenColor,
+              background: isSelected ? "#0066ff" : darkenColor,
               color: "white",
               padding: "6px 10px",
               fontWeight: "normal",
@@ -89,7 +93,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
             style={{
               overflow: "scroll",
               border: "none",
-              background: selectedNode?.id === id ? "#0066ff" : darkenColor,
+              background: isSelected ? "#0066ff" : darkenColor,
               color: "white",
               padding: "6px 10px",
               fontWeight: "normal",
@@ -111,8 +115,8 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
           style={{
             width: "1rem",
             height: "1rem",
-            background: "white",
-            color: "black",
+            background: isSelected ? "white" : btnBgColor,
+            color: isSelected ? "#0066ff" : btnTextColor,
             borderRadius: 50,
             display: "grid",
             placeItems: "center",
@@ -130,6 +134,29 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
           }}
         >
           +
+        </div>
+        <div
+          style={{
+            width: "1rem",
+            height: "1rem",
+            background: isSelected ? "white" : btnBgColor,
+            color: isSelected ? "#0066ff" : btnTextColor,
+            borderRadius: 50,
+            display: "grid",
+            placeItems: "center",
+            fontSize: "0.8rem",
+            boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
+            position: "absolute",
+            top: "4px",
+            right: 25,
+            lineHeight: "0",
+            cursor: "pointer"
+          }}
+          onClick={() => {
+            deleteNodeAndChildren(id);
+          }}
+        >
+          -
         </div>
       </div>
       <Handle type="source" position={Position.Right} id="a" style={{ opacity: 0 }} />
