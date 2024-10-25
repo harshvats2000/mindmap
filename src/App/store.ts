@@ -12,12 +12,12 @@ import { create } from "zustand";
 import { NodeData } from "./types";
 import dagre from "@dagrejs/dagre";
 
-const dagreGraph = new dagre.graphlib.Graph({ compound: false }).setDefaultEdgeLabel(() => ({}));
-
 const nodeWidth = 120;
 const nodeHeight = 1;
 
 const getLayoutedElements = (nodes: Node<NodeData>[], edges: Edge[], direction = "LR") => {
+  console.log("nodes", nodes);
+  const dagreGraph = new dagre.graphlib.Graph({ compound: false }).setDefaultEdgeLabel(() => ({}));
   const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
@@ -119,7 +119,7 @@ const useStore = create<RFState>((set, get) => ({
       const newNodeLabel = `Node ${get().nodes.length + 1}`;
       const newNode: Node = {
         id: newNodeId,
-        data: { label: newNodeLabel, onNodeLabelChange: get().updateNodeLabel },
+        data: { label: newNodeLabel },
         position: { x: 0, y: 0 },
         type: "textUpdater"
       };
@@ -130,6 +130,10 @@ const useStore = create<RFState>((set, get) => ({
         target: newNode.id,
         type: "smoothstep",
         animated: true
+        // style: {
+        //   strokeWidth: 2,
+        //   stroke: "#FF0072"
+        // }
       };
 
       const updatedNodes = [...get().nodes, newNode];
@@ -167,9 +171,26 @@ const useStore = create<RFState>((set, get) => ({
 
     traverseAndMarkForDeletion(nodeId);
 
+    const updatedNodes = get().nodes.filter((node) => !nodesToDelete.has(node.id));
+
+    // Recreate edges based on the remaining nodes
+    const updatedEdges = get()
+      .edges.filter(
+        (edge) => !edgesToDelete.has(edge.id) && !nodesToDelete.has(edge.source) && !nodesToDelete.has(edge.target)
+      )
+      .map((edge) => ({
+        ...edge,
+        id: `edge-${Math.random().toString(36).substr(2, 9)}` // Generate new unique ID
+      }));
+
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      updatedNodes as Node<NodeData>[],
+      updatedEdges as Edge[]
+    );
+
     set({
-      nodes: get().nodes.filter((node) => !nodesToDelete.has(node.id)),
-      edges: get().edges.filter((edge) => !edgesToDelete.has(edge.id))
+      nodes: layoutedNodes as Node<NodeData>[],
+      edges: layoutedEdges as Edge[]
     });
   }
 }));
