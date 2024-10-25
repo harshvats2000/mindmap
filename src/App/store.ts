@@ -16,7 +16,6 @@ const nodeWidth = 120;
 const nodeHeight = 1;
 
 const getLayoutedElements = (nodes: Node<NodeData>[], edges: Edge[], direction = "LR") => {
-  console.log("nodes", nodes);
   const dagreGraph = new dagre.graphlib.Graph({ compound: false }).setDefaultEdgeLabel(() => ({}));
   const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
@@ -59,7 +58,7 @@ export type RFState = {
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
   updateSelectedNode: (nodeId: string) => void;
-  addNode: () => void;
+  addNode: (id: string) => void;
   bgColor: string;
   updateBgColor: (color: string) => void;
   deleteNodeAndChildren: (nodeId: string) => void;
@@ -113,47 +112,46 @@ const useStore = create<RFState>((set, get) => ({
       selectedNode: get().nodes.find((node) => node.id === nodeId) || null
     });
   },
-  addNode: () => {
-    if (get().selectedNode) {
-      const newNodeId = `node-${get().nodes.length + 1}`;
-      const newNodeLabel = `Node ${get().nodes.length + 1}`;
-      const newNode: Node = {
-        id: newNodeId,
-        data: { label: newNodeLabel },
-        position: { x: 0, y: 0 },
-        type: "textUpdater"
-      };
+  addNode: (id: string) => {
+    const node = get().nodes.find((node) => node.id === id);
+    const newNodeId = `node-${get().nodes.length + 1}`;
+    const newNodeLabel = `Node ${get().nodes.length + 1}`;
+    const newNode: Node = {
+      id: newNodeId,
+      data: { label: newNodeLabel },
+      position: { x: 0, y: 0 },
+      type: "textUpdater"
+    };
 
-      const newEdge = {
-        id: `edge-${get().edges.length + 1}`,
-        source: get().selectedNode?.id,
-        target: newNode.id,
-        type: "smoothstep",
-        animated: true
-        // style: {
-        //   strokeWidth: 2,
-        //   stroke: "#FF0072"
-        // }
-      };
+    const newEdge = {
+      id: `edge-${get().edges.length + 1}`,
+      source: node?.id,
+      target: newNode.id,
+      type: "smoothstep",
+      animated: true
+      // style: {
+      //   strokeWidth: 2,
+      //   stroke: "#FF0072"
+      // }
+    };
 
-      const updatedNodes = [...get().nodes, newNode];
-      const updatedEdges = [...get().edges, newEdge];
+    const updatedNodes = [...get().nodes, newNode];
+    const updatedEdges = [...get().edges, newEdge];
 
-      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-        updatedNodes as Node<NodeData>[],
-        updatedEdges as Edge[]
-      );
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      updatedNodes as Node<NodeData>[],
+      updatedEdges as Edge[]
+    );
 
-      set({
-        nodes: layoutedNodes as Node<NodeData>[],
-        edges: layoutedEdges as Edge[]
-      });
+    set({
+      nodes: layoutedNodes as Node<NodeData>[],
+      edges: layoutedEdges as Edge[]
+    });
 
-      // Might have race condition here
-      setTimeout(() => {
-        get().updateSelectedNode(newNode.id);
-      }, 10);
-    }
+    // Might have race condition here
+    setTimeout(() => {
+      get().updateSelectedNode(newNode.id);
+    }, 10);
   },
   deleteNodeAndChildren: (nodeId: string) => {
     const nodesToDelete = new Set<string>();

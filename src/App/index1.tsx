@@ -17,20 +17,10 @@ import { DownloadButton } from "./components/DownloadButton";
 import BgColorPicker from "./components/ColorPicker";
 
 const Flow = () => {
-  const { nodes, onNodesChange, edges, onEdgesChange, addNode, bgColor } = useStore<RFState>(selector);
+  const { nodes, onNodesChange, edges, onEdgesChange, bgColor } = useStore<RFState>(selector);
 
   const ReactFlowInstance = useReactFlow();
   const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
-
-  useHotkeys(
-    "tab",
-    (event) => {
-      event.preventDefault();
-      addNode();
-    },
-    { enableOnFormTags: true },
-    [addNode]
-  );
 
   useEffect(() => {
     ReactFlowInstance.fitView({ duration: 500 });
@@ -44,12 +34,8 @@ const Flow = () => {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       // onConnect={onConnect}
-      // onNodeClick={onNodeClick}
       connectionLineType={ConnectionLineType.SmoothStep}
       nodeTypes={nodeTypes}
-      // onNodeDoubleClick={(node, event) => {
-      //   console.log("node", node);
-      // }}
       //   defaultViewport={{ x: 0, y: 0, zoom: 0.1 }}
       fitView
       // draggable={false}

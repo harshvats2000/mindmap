@@ -3,6 +3,7 @@ import { Handle, Position } from "@xyflow/react";
 import useStore from "../store";
 import { NodeData, selector } from "../types";
 import { darkenHexColor } from "../helpers";
+import { useHotkeys } from "react-hotkeys-hook";
 // import { useHotkeys } from "react-hotkeys-hook";
 
 export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
@@ -42,6 +43,18 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const onSingleClick = useCallback(() => {
     updateSelectedNode(id);
   }, []);
+
+  useHotkeys(
+    "tab",
+    (event) => {
+      if (isSelected) {
+        event.preventDefault();
+        addNode(id);
+      }
+    },
+    { enableOnFormTags: true },
+    [addNode, isSelected]
+  );
 
   // useHotkeys(
   //   "enter",
@@ -135,8 +148,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
                 cursor: "pointer"
               }}
               onClick={() => {
-                updateSelectedNode(id);
-                addNode();
+                addNode(id);
               }}
             >
               +
