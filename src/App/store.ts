@@ -11,6 +11,7 @@ import {
 import { create } from "zustand";
 import { NodeData } from "./types";
 import dagre from "@dagrejs/dagre";
+import { User } from "firebase/auth";
 
 const nodeWidth = 120;
 const nodeHeight = 1;
@@ -64,6 +65,8 @@ export type RFState = {
   deleteNodeAndChildren: (nodeId: string) => void;
   isActionButtonVisible: boolean;
   toggleActionButton: () => void;
+  user: User | null;
+  setUser: (user: User | null) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -190,7 +193,9 @@ const useStore = create<RFState>((set, get) => ({
       nodes: layoutedNodes as Node<NodeData>[],
       edges: layoutedEdges as Edge[]
     });
-  }
+  },
+  user: null,
+  setUser: (user: User | null) => set({ user })
 }));
 
 // After creating the store, set the initial selected node

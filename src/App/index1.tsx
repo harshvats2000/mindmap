@@ -7,14 +7,14 @@ import {
   Background,
   BackgroundVariant
 } from "@xyflow/react";
-import { useHotkeys } from "react-hotkeys-hook";
 import "../index.css";
 import "@xyflow/react/dist/style.css";
 import { TextUpdaterNode } from "./components/node";
 import useStore, { RFState } from "./store";
 import { selector } from "./types";
-import { DownloadButton } from "./components/DownloadButton";
-import BgColorPicker from "./components/ColorPicker";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
+import MyPanel from "./components/Panel";
 
 const Flow = () => {
   const { nodes, onNodesChange, edges, onEdgesChange, bgColor } = useStore<RFState>(selector);
@@ -41,14 +41,23 @@ const Flow = () => {
       // draggable={false}
     >
       <Background bgColor={bgColor} variant={BackgroundVariant.Dots} />
-      <DownloadButton />
-      <BgColorPicker />
+      <MyPanel />
     </ReactFlow>
     // </div>
   );
 };
 
 export default function App() {
+  const setUser = useStore((state) => state.setUser);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+
+    return () => unsubscribe();
+  }, [setUser]);
+
   return (
     <ReactFlowProvider>
       <Flow />

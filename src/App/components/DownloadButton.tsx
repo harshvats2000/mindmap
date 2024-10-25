@@ -42,10 +42,10 @@ export function DownloadButton() {
   };
 
   return (
-    <Panel position="top-right">
+    <div>
       <button className="btn" onClick={onClick} style={{ backgroundColor: darkenHexColor(bgColor, 20) }}>
         Download Image
       </button>
-    </Panel>
+    </div>
   );
 }

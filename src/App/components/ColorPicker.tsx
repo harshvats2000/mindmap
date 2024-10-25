@@ -15,7 +15,7 @@ const BgColorPicker = () => {
   }, [color, updateBgColor]);
 
   return (
-    <div style={{ zIndex: 5, position: "absolute", top: 10, left: 10 }}>
+    <div>
       {isColorPickerOpen ? (
         <div>
           <button
