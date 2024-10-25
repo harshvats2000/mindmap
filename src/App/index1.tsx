@@ -1,36 +1,33 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  ReactFlow,
-  ConnectionLineType,
-  useReactFlow,
-  ReactFlowProvider,
-  Background,
-  BackgroundVariant
-} from "@xyflow/react";
+import { ReactFlow, ConnectionLineType, useReactFlow, Background, BackgroundVariant } from "@xyflow/react";
 import "../index.css";
 import "@xyflow/react/dist/style.css";
-import { TextUpdaterNode } from "./components/node";
-import useStore, { RFState } from "./store";
-import { selector } from "./types";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase";
-import MyPanel from "./components/Panel";
+import useStore, { RFStatePlay } from "./store-play";
+import { selectorPlay } from "./types";
+import { TextUpdaterNode } from "./components/playground/playNode";
+import MyPanel from "./components/playground/PlayPanel";
 
 const Flow = () => {
-  const { nodes, onNodesChange, edges, onEdgesChange, bgColor } = useStore<RFState>(selector);
+  const { mindmap, onNodesChange, onEdgesChange, bgColor, createMindmap } = useStore<RFStatePlay>(selectorPlay);
+
+  if (!mindmap) {
+    createMindmap();
+  }
 
   const ReactFlowInstance = useReactFlow();
   const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
 
   useEffect(() => {
     ReactFlowInstance.fitView({ duration: 500 });
-  }, [nodes]);
+  }, [mindmap?.nodes]);
+
+  console.log(bgColor);
 
   return (
     // <div style={{ width: "2000px", height: "100%" }}>
     <ReactFlow
-      nodes={nodes}
-      edges={edges}
+      nodes={mindmap?.nodes}
+      edges={mindmap?.edges}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       // onConnect={onConnect}
@@ -48,19 +45,5 @@ const Flow = () => {
 };
 
 export default function App() {
-  const setUser = useStore((state) => state.setUser);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-
-    return () => unsubscribe();
-  }, [setUser]);
-
-  return (
-    <ReactFlowProvider>
-      <Flow />
-    </ReactFlowProvider>
-  );
+  return <Flow />;
 }

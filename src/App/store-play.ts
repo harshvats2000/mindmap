@@ -12,8 +12,7 @@ import { create } from "zustand";
 import { IMindmap, NodeData } from "./types";
 import dagre from "@dagrejs/dagre";
 import { User } from "firebase/auth";
-import { updateDoc, doc, getDoc, Timestamp, setDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { Timestamp } from "firebase/firestore";
 import { nanoid } from "nanoid";
 
 const nodeWidth = 150;
@@ -54,7 +53,7 @@ const getLayoutedElements = (nodes: Node<NodeData>[], edges: Edge[], direction =
   return { nodes: newNodes, edges };
 };
 
-export type RFState = {
+export type RFStatePlay = {
   selectedNode: Node | null;
   setSelectedNode: (nodeId: string | null) => void;
   onNodesChange: OnNodesChange;
@@ -67,50 +66,25 @@ export type RFState = {
   deleteNodeAndChildren: (nodeId: string) => void;
   isActionButtonVisible: boolean;
   toggleActionButton: () => void;
-  isAuthenticating: boolean;
-  setIsAuthenticating: (isAuthenticating: boolean) => void;
-  user: User | null;
-  setUser: (user: User | null) => void;
-  saveMindmap: () => Promise<void>;
-  loadMindmap: (mindmapId: string) => Promise<void>;
   createMindmap: () => Promise<string>;
   mindmap: IMindmap | null;
-  isFetchingMindmap: boolean;
-  setIsFetchingMindmap: (isFetchingMindmap: boolean) => void;
-  isSavingMindmap: boolean;
 };
 
-const useStore = create<RFState>((set, get) => ({
+const useStore = create<RFStatePlay>((set, get) => ({
   selectedNode: null,
   setSelectedNode: (nodeId: string | null) => {
     set({ selectedNode: get().mindmap?.nodes.find((node) => node.id === nodeId) || null });
   },
-  bgColor: "#1a365d",
+  bgColor: "#004B4B",
   isActionButtonVisible: true,
   toggleActionButton: () => {
     set({ isActionButtonVisible: !get().isActionButtonVisible });
   },
   updateBgColor: (color: string) => {
     set({ bgColor: color });
-    const mindmap = get().mindmap;
-    if (!mindmap) {
-      console.error("Mindmap not found");
-      return;
-    }
-
-    const mindmapData = {
-      bgColor: color,
-      updatedAt: Timestamp.fromDate(new Date())
-    };
-
-    updateDoc(doc(db, "mindmaps", mindmap.id), mindmapData);
   },
   onNodesChange: (changes: NodeChange[]) => {
-    const mindmap = get().mindmap;
-    if (!mindmap) {
-      console.error("Mindmap not found");
-      return;
-    }
+    const mindmap = get().mindmap!;
 
     set({
       mindmap: {
@@ -121,11 +95,7 @@ const useStore = create<RFState>((set, get) => ({
     });
   },
   onEdgesChange: (changes: EdgeChange[]) => {
-    const mindmap = get().mindmap;
-    if (!mindmap) {
-      console.error("Mindmap not found");
-      return;
-    }
+    const mindmap = get().mindmap!;
 
     set({
       mindmap: {
@@ -135,11 +105,7 @@ const useStore = create<RFState>((set, get) => ({
     });
   },
   updateNodeLabel: (nodeId: string, label: string) => {
-    const mindmap = get().mindmap;
-    if (!mindmap) {
-      console.error("Mindmap not found");
-      return;
-    }
+    const mindmap = get().mindmap!;
     set({
       mindmap: {
         ...mindmap,
@@ -159,11 +125,7 @@ const useStore = create<RFState>((set, get) => ({
     });
   },
   addNode: (id: string) => {
-    const mindmap = get().mindmap;
-    if (!mindmap) {
-      console.error("Mindmap not found");
-      return;
-    }
+    const mindmap = get().mindmap!;
     const node = mindmap.nodes.find((node) => node.id === id);
     const newNodeId = `node-${mindmap.nodes.length + 1}`;
     const newNodeLabel = `Node ${mindmap.nodes.length + 1}`;
@@ -210,11 +172,7 @@ const useStore = create<RFState>((set, get) => ({
   deleteNodeAndChildren: (nodeId: string) => {
     const nodesToDelete = new Set<string>();
     const edgesToDelete = new Set<string>();
-    const mindmap = get().mindmap;
-    if (!mindmap) {
-      console.error("Mindmap not found");
-      return;
-    }
+    const mindmap = get().mindmap!;
 
     const traverseAndMarkForDeletion = (currentNodeId: string) => {
       nodesToDelete.add(currentNodeId);
@@ -253,58 +211,8 @@ const useStore = create<RFState>((set, get) => ({
       }
     });
   },
-  user: null,
-  isAuthenticating: true,
-  setIsAuthenticating: (isAuthenticating: boolean) => set({ isAuthenticating }),
-  setUser: (user: User | null) => set({ user }),
-  saveMindmap: async () => {
-    set({ isSavingMindmap: true });
-    const { mindmap } = get();
-    if (!mindmap) {
-      console.error("Mindmap not found");
-      return;
-    }
-
-    const mindmapData = {
-      ...mindmap,
-      updatedAt: Timestamp.fromDate(new Date())
-    };
-
-    try {
-      await updateDoc(doc(db, "mindmaps", mindmap.id), mindmapData);
-    } catch (error) {
-      console.error("Error saving mindmap: ", error);
-    } finally {
-      set({ isSavingMindmap: false });
-    }
-  },
-  loadMindmap: async (mindmapId: string) => {
-    try {
-      const docRef = doc(db, "mindmaps", mindmapId);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        set({
-          mindmap: data as IMindmap,
-          bgColor: data?.bgColor || get().bgColor
-        });
-      } else {
-        console.log("No such mindmap!");
-      }
-    } catch (error) {
-      console.error("Error loading mindmap: ", error);
-    }
-  },
   mindmap: null,
-  isSavingMindmap: false,
   createMindmap: async () => {
-    const { user } = get();
-    if (!user) {
-      console.error("User not authenticated");
-      throw new Error("User not authenticated");
-    }
-
     const initialNode: Node<NodeData> = {
       id: "root",
       type: "textUpdater",
@@ -317,14 +225,12 @@ const useStore = create<RFState>((set, get) => ({
       title: "Untitled Mindmap",
       nodes: [initialNode],
       edges: [],
-      userId: user.uid,
+      userId: "does not matter",
       createdAt: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date())
     };
 
     try {
-      await setDoc(doc(db, "mindmaps", newMindmap.id), newMindmap);
-
       set({
         mindmap: { ...newMindmap, id: newMindmap.id }
       });
@@ -334,9 +240,7 @@ const useStore = create<RFState>((set, get) => ({
       console.error("Error creating mindmap: ", error);
       throw error;
     }
-  },
-  isFetchingMindmap: false,
-  setIsFetchingMindmap: (isFetchingMindmap: boolean) => set({ isFetchingMindmap })
+  }
 }));
 
 // After creating the store, set the initial selected node

@@ -1,9 +1,9 @@
 import React from "react";
 import { Panel, useReactFlow, getNodesBounds, getViewportForBounds } from "@xyflow/react";
 import { toPng } from "html-to-image";
-import { selector } from "../types";
-import useStore, { RFState } from "../store";
-import { darkenHexColor } from "../helpers";
+import { selectorPlay } from "../../types";
+import useStore, { RFStatePlay } from "../../store-play";
+import { darkenHexColor } from "../../helpers";
 
 function downloadImage(dataUrl: string) {
   const a = document.createElement("a");
@@ -18,7 +18,7 @@ const imageHeight = 768;
 
 export function DownloadButton() {
   const { getNodes } = useReactFlow();
-  const { bgColor, toggleActionButton, setSelectedNode } = useStore<RFState>(selector);
+  const { bgColor, toggleActionButton, setSelectedNode } = useStore<RFStatePlay>(selectorPlay);
   const onClick = () => {
     // we calculate a transform for the nodes so that all nodes are visible
     // we then overwrite the transform of the `.react-flow__viewport` element

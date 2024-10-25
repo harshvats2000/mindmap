@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Handle, Position } from "@xyflow/react";
-import useStore from "../store";
-import { NodeData, selector } from "../types";
-import { darkenHexColor } from "../helpers";
 import { useHotkeys } from "react-hotkeys-hook";
+import { NodeData, selectorPlay } from "@/App/types";
+import useStore, { RFStatePlay } from "@/App/store-play";
+import { darkenHexColor } from "@/App/helpers";
 // import { useHotkeys } from "react-hotkeys-hook";
 
 export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
@@ -16,7 +16,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     bgColor,
     deleteNodeAndChildren,
     isActionButtonVisible
-  } = useStore(selector);
+  } = useStore<RFStatePlay>(selectorPlay);
   const isSelected = selectedNode?.id === id;
   const inputRef = useRef<HTMLInputElement>(null);
   const darkenColor = darkenHexColor(bgColor, 20);
