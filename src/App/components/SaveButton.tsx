@@ -15,6 +15,8 @@ const SaveButton = () => {
       </div>
     );
   }
+
+  return null;
 };
 
 export default SaveButton;
