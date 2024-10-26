@@ -5,7 +5,7 @@ import useStore from "../store";
 import { Link, useNavigate } from "react-router-dom";
 import { darkenHexColor } from "../helpers";
 import { IMindmap } from "../types";
-import { MoreVertical, Trash, Edit, User, LogOut } from "lucide-react";
+import { MoreVertical, Trash, Edit, User, LogOut, PartyPopper, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +27,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [editingMindmap, setEditingMindmap] = useState<IMindmap | null>(null);
   const [newTitle, setNewTitle] = useState("");
+  const [isUpgrading, setIsUpgrading] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -96,12 +97,73 @@ const Dashboard = () => {
     }
   };
 
+  const handleUpgrade = async () => {
+    setIsUpgrading(true);
+    const token = await user?.getIdToken();
+    try {
+      const createOrderResponse = await fetch("https://mindmap-backend-ivory.vercel.app/payment/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!createOrderResponse.ok) {
+        throw new Error("Failed to create order");
+      }
+
+      const { order_id } = await createOrderResponse.json();
+
+      // Load Razorpay script dynamically
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      document.body.appendChild(script);
+
+      script.onload = () => {
+        setIsUpgrading(false);
+        const options = {
+          key: "rzp_test_UsuP0ivlOkiuGA",
+          order_id: order_id,
+          name: "Mindmap",
+          description: "Premium Upgrade",
+          notes: {
+            userId: user?.uid
+          },
+          handler: async function (response: any) {
+            console.log("Payment successful:", response);
+            // Reload the page after successful payment
+            window.location.reload();
+          },
+          prefill: {
+            email: user?.email
+          }
+        };
+
+        const paymentObject = new (window as any).Razorpay(options);
+        paymentObject.open();
+      };
+    } catch (error) {
+      console.error("Error initiating payment:", error);
+      alert("Failed to initiate payment. Please try again.");
+      setIsUpgrading(false);
+    }
+  };
+
   const MindmapSkeleton = () => (
     <div className="p-4 border rounded-lg">
       <Skeleton className="h-6 w-3/4 mb-2" />
       <Skeleton className="h-4 w-1/2" />
     </div>
   );
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const token = await user?.getIdToken();
+  //     console.log(token, user);
+  //   })();
+  // }, [user]);
 
   return (
     <div className="p-6 relative max-w-screen-lg mx-auto">
@@ -115,8 +177,14 @@ const Dashboard = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Account
+                {isUpgrading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <User className="h-4 w-4" />
+                    Account
+                  </>
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -125,6 +193,10 @@ const Dashboard = () => {
                 <span className="-mt-2 text-xs">{user?.email}</span>
               </DropdownMenuItem>
               <Separator />
+              <DropdownMenuItem onClick={handleUpgrade} className="mt-2">
+                <PartyPopper className="mr-2 h-4 w-4" />
+                <span>Upgrade</span>
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleSignOut} className="mt-2">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
