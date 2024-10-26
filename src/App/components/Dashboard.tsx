@@ -5,7 +5,18 @@ import useStore from "../store";
 import { Link, useNavigate } from "react-router-dom";
 import { darkenHexColor } from "../helpers";
 import { IMindmap } from "../types";
-import { MoreVertical, Trash, Edit, User, LogOut, PartyPopper, Loader2 } from "lucide-react";
+import {
+  MoreVertical,
+  Trash,
+  Edit,
+  User,
+  LogOut,
+  PartyPopper,
+  Loader2,
+  Sparkles,
+  FolderOpen,
+  Plus
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +30,12 @@ import { Label } from "@/components/ui/label";
 import { signOut } from "firebase/auth";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import UpgradeModal from "./UpgradeModal";
+
+interface UpgradeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
 const Dashboard = () => {
   const [mindmaps, setMindmaps] = useState<IMindmap[]>([]);
@@ -27,7 +44,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [editingMindmap, setEditingMindmap] = useState<IMindmap | null>(null);
   const [newTitle, setNewTitle] = useState("");
-  const [isUpgrading, setIsUpgrading] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -97,59 +114,59 @@ const Dashboard = () => {
     }
   };
 
-  const handleUpgrade = async () => {
-    setIsUpgrading(true);
-    const token = await user?.getIdToken();
-    try {
-      const createOrderResponse = await fetch("https://mindmap-backend-ivory.vercel.app/payment/create-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
-      });
+  // const handleUpgrade = async () => {
+  //   setIsUpgrading(true);
+  //   const token = await user?.getIdToken();
+  //   try {
+  //     const createOrderResponse = await fetch("https://mindmap-backend-ivory.vercel.app/payment/create-order", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
 
-      if (!createOrderResponse.ok) {
-        throw new Error("Failed to create order");
-      }
+  //     if (!createOrderResponse.ok) {
+  //       throw new Error("Failed to create order");
+  //     }
 
-      const { order_id } = await createOrderResponse.json();
+  //     const { order_id } = await createOrderResponse.json();
 
-      // Load Razorpay script dynamically
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.async = true;
-      document.body.appendChild(script);
+  //     // Load Razorpay script dynamically
+  //     const script = document.createElement("script");
+  //     script.src = "https://checkout.razorpay.com/v1/checkout.js";
+  //     script.async = true;
+  //     document.body.appendChild(script);
 
-      script.onload = () => {
-        setIsUpgrading(false);
-        const options = {
-          key: "rzp_test_UsuP0ivlOkiuGA",
-          order_id: order_id,
-          name: "Mindmap",
-          description: "Premium Upgrade",
-          notes: {
-            userId: user?.uid
-          },
-          handler: async function (response: any) {
-            console.log("Payment successful:", response);
-            // Reload the page after successful payment
-            window.location.reload();
-          },
-          prefill: {
-            email: user?.email
-          }
-        };
+  //     script.onload = () => {
+  //       setIsUpgrading(false);
+  //       const options = {
+  //         key: "rzp_test_UsuP0ivlOkiuGA",
+  //         order_id: order_id,
+  //         name: "Mindmap",
+  //         description: "Premium Upgrade",
+  //         notes: {
+  //           userId: user?.uid
+  //         },
+  //         handler: async function (response: any) {
+  //           console.log("Payment successful:", response);
+  //           // Reload the page after successful payment
+  //           window.location.reload();
+  //         },
+  //         prefill: {
+  //           email: user?.email
+  //         }
+  //       };
 
-        const paymentObject = new (window as any).Razorpay(options);
-        paymentObject.open();
-      };
-    } catch (error) {
-      console.error("Error initiating payment:", error);
-      alert("Failed to initiate payment. Please try again.");
-      setIsUpgrading(false);
-    }
-  };
+  //       const paymentObject = new (window as any).Razorpay(options);
+  //       paymentObject.open();
+  //     };
+  //   } catch (error) {
+  //     console.error("Error initiating payment:", error);
+  //     alert("Failed to initiate payment. Please try again.");
+  //     setIsUpgrading(false);
+  //   }
+  // };
 
   const MindmapSkeleton = () => (
     <div className="p-4 border rounded-lg">
@@ -157,6 +174,10 @@ const Dashboard = () => {
       <Skeleton className="h-4 w-1/2" />
     </div>
   );
+
+  const handleUpgrade = () => {
+    setShowUpgradeModal(true);
+  };
 
   // useEffect(() => {
   //   (async () => {
@@ -170,21 +191,31 @@ const Dashboard = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Mindmaps</h1>
         <div className="flex flex-row gap-2">
+          <Button
+            onClick={() => setShowUpgradeModal(true)}
+            className="
+          bg-gradient-to-r from-purple-500 to-pink-500
+          hover:from-purple-600 hover:to-pink-600
+          text-white font-semibold py-2 px-4 rounded-full
+          shadow-lg hover:shadow-xl
+          transition-all duration-300 ease-in-out
+          transform hover:scale-105
+          flex items-center space-x-2
+        "
+          >
+            <Sparkles className="w-5 h-5" />
+            <span>Upgrade to Pro</span>
+          </Button>
           <Button variant="outline" className="flex items-center gap-2" onClick={createNewMindmap}>
-            <User className="h-4 w-4" />
+            <Plus className="h-4 w-4" />
             New MindMap
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
-                {isUpgrading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <User className="h-4 w-4" />
-                    Account
-                  </>
-                )}
+                {/* <Loader2 className="mr-2 h-4 w-4 animate-spin" /> */}
+                <User className="h-4 w-4" />
+                Account
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -193,10 +224,10 @@ const Dashboard = () => {
                 <span className="-mt-2 text-xs">{user?.email}</span>
               </DropdownMenuItem>
               <Separator />
-              <DropdownMenuItem onClick={handleUpgrade} className="mt-2">
+              {/* <DropdownMenuItem onClick={handleUpgrade} className="mt-2">
                 <PartyPopper className="mr-2 h-4 w-4" />
                 <span>Upgrade</span>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem onClick={handleSignOut} className="mt-2">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
@@ -213,7 +244,7 @@ const Dashboard = () => {
             <MindmapSkeleton />
             <MindmapSkeleton />
           </>
-        ) : (
+        ) : mindmaps.length > 0 ? (
           mindmaps.map((mindmap) => (
             <div key={mindmap.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow relative">
               <Link to={`/mindmap/${mindmap.id}`} className="block">
@@ -247,6 +278,16 @@ const Dashboard = () => {
               </DropdownMenu>
             </div>
           ))
+        ) : (
+          <div className="col-span-full flex flex-col items-center justify-center text-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+            <FolderOpen className="w-16 h-16 text-gray-400 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No mindmaps yet</h3>
+            <p className="text-gray-500 mb-4">Create your first mindmap to get started!</p>
+            <Button onClick={createNewMindmap} className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              Create New Mindmap
+            </Button>
+          </div>
         )}
       </div>
 
@@ -276,6 +317,8 @@ const Dashboard = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
     </div>
   );
 };
