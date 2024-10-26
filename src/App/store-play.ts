@@ -213,18 +213,64 @@ const useStore = create<RFStatePlay>((set, get) => ({
   },
   mindmap: null,
   createMindmap: async () => {
-    const initialNode: Node<NodeData> = {
-      id: "root",
-      type: "textUpdater",
-      data: { label: "New Mindmap" },
-      position: { x: 0, y: 0 }
-    };
+    const initialNodes: Node<NodeData>[] = [
+      {
+        id: "root",
+        type: "textUpdater",
+        data: { label: "New Mindmap" },
+        position: { x: 0, y: 0 }
+      },
+      {
+        id: "node-1",
+        type: "textUpdater",
+        data: { label: "Topic 1" },
+        position: { x: 0, y: 0 }
+      },
+      {
+        id: "node-2",
+        type: "textUpdater",
+        data: { label: "Topic 2" },
+        position: { x: 0, y: 0 }
+      },
+      {
+        id: "node-3",
+        type: "textUpdater",
+        data: { label: "Topic 3" },
+        position: { x: 0, y: 0 }
+      }
+    ];
+
+    const initialEdges: Edge[] = [
+      {
+        id: "edge-1",
+        source: "root",
+        target: "node-1",
+        type: "smoothstep",
+        animated: true
+      },
+      {
+        id: "edge-2",
+        source: "root",
+        target: "node-2",
+        type: "smoothstep",
+        animated: true
+      },
+      {
+        id: "edge-3",
+        source: "root",
+        target: "node-3",
+        type: "smoothstep",
+        animated: true
+      }
+    ];
+
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(initialNodes, initialEdges);
 
     const newMindmap: IMindmap = {
       id: nanoid(),
       title: "Untitled Mindmap",
-      nodes: [initialNode],
-      edges: [],
+      nodes: layoutedNodes as Node<NodeData>[],
+      edges: layoutedEdges as Edge[],
       userId: "does not matter",
       createdAt: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date())
