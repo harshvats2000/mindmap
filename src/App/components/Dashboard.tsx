@@ -3,7 +3,7 @@ import { collection, query, where, getDocs, deleteDoc, doc, updateDoc } from "fi
 import { auth, db } from "../../firebase";
 import useStore from "../store";
 import { Link, useNavigate } from "react-router-dom";
-import { darkenHexColor } from "../helpers";
+import { darkenHexColor, formatRelativeTime } from "../helpers";
 import { IMindmap } from "../types";
 import {
   MoreVertical,
@@ -249,9 +249,12 @@ const Dashboard = () => {
             <div key={mindmap.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow relative">
               <Link to={`/mindmap/${mindmap.id}`} className="block">
                 <h2 className="text-lg font-semibold">{mindmap.title || "Untitled Mindmap"}</h2>
-                <p className="text-sm text-gray-500">
-                  Created: {new Date(mindmap.createdAt.seconds * 1000).toLocaleDateString()}
-                </p>
+                <div className="flex justify-between items-center mt-2">
+                  <p className="text-sm text-gray-500">{formatRelativeTime(mindmap.createdAt.seconds * 1000)}</p>
+                  <p className="text-sm text-gray-500">
+                    Nodes: {mindmap.nodes ? Object.keys(mindmap.nodes).length : 0}
+                  </p>
+                </div>
               </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
