@@ -78,9 +78,11 @@ export type RFState = {
   isFetchingMindmap: boolean;
   setIsFetchingMindmap: (isFetchingMindmap: boolean) => void;
   isSavingMindmap: boolean;
+  numberONodes: number;
 };
 
 const useStore = create<RFState>((set, get) => ({
+  numberONodes: 1,
   selectedNode: null,
   setSelectedNode: (nodeId: string | null) => {
     set({ selectedNode: get().mindmap?.nodes.find((node) => node.id === nodeId) || null });
@@ -199,7 +201,8 @@ const useStore = create<RFState>((set, get) => ({
         ...mindmap,
         nodes: layoutedNodes as Node<NodeData>[],
         edges: layoutedEdges as Edge[]
-      }
+      },
+      numberONodes: layoutedNodes.length
     });
 
     // Might have race condition here, this is to ensure that the new node is selected after the layout is updated
@@ -287,7 +290,8 @@ const useStore = create<RFState>((set, get) => ({
         const data = docSnap.data();
         set({
           mindmap: data as IMindmap,
-          bgColor: data?.bgColor || get().bgColor
+          bgColor: data?.bgColor || get().bgColor,
+          numberONodes: data?.nodes?.length || 1
         });
       } else {
         console.log("No such mindmap!");
@@ -326,7 +330,8 @@ const useStore = create<RFState>((set, get) => ({
       await setDoc(doc(db, "mindmaps", newMindmap.id), newMindmap);
 
       set({
-        mindmap: { ...newMindmap, id: newMindmap.id }
+        mindmap: { ...newMindmap, id: newMindmap.id },
+        numberONodes: 1
       });
 
       return newMindmap.id;

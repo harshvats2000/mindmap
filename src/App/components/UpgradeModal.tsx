@@ -73,7 +73,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <div className="text-center">
-                <p className="text-2xl font-bold">$30/year</p>
+                <p className="text-2xl font-bold">$20/year</p>
                 <p className="text-sm text-muted-foreground">Billed annually</p>
               </div>
               <Button

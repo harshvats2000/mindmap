@@ -4,6 +4,7 @@ import useStore from "../store";
 import { NodeData, selector } from "../types";
 import { darkenHexColor } from "../helpers";
 import { useHotkeys } from "react-hotkeys-hook";
+import UpgradeModal from "./UpgradeModal";
 // import { useHotkeys } from "react-hotkeys-hook";
 
 export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
@@ -15,13 +16,23 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     addNode,
     bgColor,
     deleteNodeAndChildren,
-    isActionButtonVisible
+    isActionButtonVisible,
+    numberONodes
   } = useStore(selector);
   const isSelected = selectedNode?.id === id;
   const inputRef = useRef<HTMLInputElement>(null);
   const darkenColor = darkenHexColor(bgColor, 20);
   const btnBgColor = darkenHexColor(bgColor, 60);
   const btnTextColor = darkenHexColor(bgColor, 10);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  const handleAddNode = () => {
+    if (numberONodes >= 10) {
+      setShowUpgradeModal(true);
+    } else {
+      addNode(id);
+    }
+  };
 
   const onChange = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,11 +60,11 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     (event) => {
       if (isSelected) {
         event.preventDefault();
-        addNode(id);
+        handleAddNode();
       }
     },
     { enableOnFormTags: true },
-    [addNode, isSelected]
+    [handleAddNode, isSelected]
   );
 
   // useHotkeys(
@@ -148,7 +159,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
                 cursor: "pointer"
               }}
               onClick={() => {
-                addNode(id);
+                handleAddNode();
               }}
             >
               +
@@ -182,6 +193,8 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
         )}
       </div>
       <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
+
+      {showUpgradeModal && <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />}
     </div>
   );
 }

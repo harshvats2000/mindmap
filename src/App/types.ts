@@ -30,7 +30,8 @@ export const selector = (state: RFState) => ({
   isFetchingMindmap: state.isFetchingMindmap,
   setIsFetchingMindmap: state.setIsFetchingMindmap,
   setSelectedNode: state.setSelectedNode,
-  isSavingMindmap: state.isSavingMindmap
+  isSavingMindmap: state.isSavingMindmap,
+  numberONodes: state.numberONodes
 });
 
 export const selectorPlay = (state: RFStatePlay) => ({
