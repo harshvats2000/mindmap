@@ -316,6 +316,7 @@ const useStore = create<RFStatePlay>((set, get) => ({
   },
   addSiblingNode: () => {
     const id = get().selectedNode?.id!;
+    if (!id || id === "root") return;
     const mindmap = get().mindmap!;
 
     const newNodeId = `node-${mindmap.nodes.length + 1}`;
