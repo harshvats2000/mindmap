@@ -87,6 +87,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
           />
         ) : (
           <div
+            className="no-scrollbar"
             style={{
               overflow: "scroll",
               border: "none",

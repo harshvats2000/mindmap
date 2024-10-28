@@ -41,8 +41,7 @@ const Flow = () => {
 
   useHotkeys(
     "down",
-    (event) => {
-      console.log("down");
+    () => {
       selectNextNodeInSameColumn();
     },
     [selectNextNodeInSameColumn]
@@ -50,20 +49,17 @@ const Flow = () => {
 
   useHotkeys(
     "up",
-    (event) => {
-      console.log("not selected inside up");
-
-      console.log("up");
+    () => {
       selectPreviousNodeInSameColumn();
     },
     [selectPreviousNodeInSameColumn]
   );
 
-  useHotkeys("left", (event) => {
+  useHotkeys("left", () => {
     selectParentNode();
   });
 
-  useHotkeys("right", (event) => {
+  useHotkeys("right", () => {
     selectFirstChildNode();
   });
 
