@@ -80,6 +80,8 @@ export type RFStatePlay = {
   selectNextNodeInSameColumn: () => void;
   selectParentNode: () => void;
   selectFirstChildNode: () => void;
+  editingNode: string | null;
+  setEditingNode: (nodeId: string | null) => void;
 };
 
 const useStore = create<RFStatePlay>((set, get) => ({
@@ -393,6 +395,10 @@ const useStore = create<RFStatePlay>((set, get) => ({
     if (firstChild) {
       get().updateSelectedNode(firstChild);
     }
+  },
+  editingNode: null,
+  setEditingNode: (nodeId: string | null) => {
+    set({ editingNode: nodeId });
   }
 }));
 

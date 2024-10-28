@@ -54,7 +54,9 @@ export const selectorPlay = (state: RFStatePlay) => ({
   selectPreviousNodeInSameColumn: state.selectPreviousNodeInSameColumn,
   selectNextNodeInSameColumn: state.selectNextNodeInSameColumn,
   selectParentNode: state.selectParentNode,
-  selectFirstChildNode: state.selectFirstChildNode
+  selectFirstChildNode: state.selectFirstChildNode,
+  editingNode: state.editingNode,
+  setEditingNode: state.setEditingNode
 });
 
 export type IMindmap = {

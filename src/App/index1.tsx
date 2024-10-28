@@ -20,7 +20,11 @@ const Flow = () => {
     selectPreviousNodeInSameColumn,
     selectParentNode,
     selectFirstChildNode,
-    deleteNodeAndChildren
+    addSiblingNode,
+    deleteNodeAndChildren,
+    selectedNode,
+    setEditingNode,
+    editingNode
   } = useStore<RFStatePlay>(selectorPlay);
 
   if (!mindmap) {
@@ -35,8 +39,38 @@ const Flow = () => {
     () => {
       addChildNode();
     },
-    // { enableOnFormTags: true },
     [addChildNode]
+  );
+
+  useHotkeys(
+    "enter",
+    () => {
+      console.log(selectedNode?.id, editingNode);
+      if (selectedNode) {
+        if (selectedNode.id === editingNode) {
+          setEditingNode(null);
+        } else {
+          addSiblingNode();
+        }
+      }
+    },
+    { enableOnFormTags: true },
+    [addSiblingNode, selectedNode, setEditingNode, editingNode]
+  );
+
+  useHotkeys(
+    "shift+enter",
+    () => {
+      if (selectedNode) {
+        if (selectedNode.id === editingNode) {
+          setEditingNode(null);
+        } else {
+          setEditingNode(selectedNode.id);
+        }
+      }
+    },
+    { enableOnFormTags: true },
+    [selectedNode, setEditingNode, editingNode]
   );
 
   useHotkeys(

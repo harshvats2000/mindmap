@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
-  const [isEditing, setIsEditing] = useState(true);
   const {
     updateNodeLabel,
     updateSelectedNode,
@@ -22,9 +21,12 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     addSiblingNode,
     bgColor,
     deleteNodeAndChildren,
-    isActionButtonVisible
+    isActionButtonVisible,
+    editingNode,
+    setEditingNode
   } = useStore<RFStatePlay>(selectorPlay);
   const isSelected = selectedNode?.id === id;
+  const isEditing = editingNode === id;
   const inputRef = useRef<HTMLInputElement>(null);
   const darkenColor = darkenHexColor(bgColor, 20);
   const btnBgColor = darkenHexColor(bgColor, 60);
@@ -38,24 +40,27 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     [updateNodeLabel, id]
   );
 
-  const onDoubleClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsEditing(true);
-  }, []);
+  const onDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setEditingNode(id);
+    },
+    [setEditingNode, id]
+  );
 
   const onBlur = useCallback(() => {
-    setIsEditing(false);
-  }, []);
+    setEditingNode(null);
+  }, [setEditingNode]);
 
   const onSingleClick = useCallback(() => {
     updateSelectedNode(id);
-  }, []);
+  }, [updateSelectedNode, id]);
 
   useEffect(() => {
     if (!isSelected) {
-      setIsEditing(false);
+      setEditingNode(null);
     }
-  }, [selectedNode]);
+  }, [isSelected, setEditingNode]);
 
   return (
     <div onDoubleClick={onDoubleClick} onClick={onSingleClick}>
