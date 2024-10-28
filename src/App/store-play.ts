@@ -203,6 +203,16 @@ const useStore = create<RFStatePlay>((set, get) => ({
 
     traverseAndMarkForDeletion(nodeId);
 
+    const nextNode = findNextNodeInSameColumn(mindmap.nodes as Node<NodeData>[], nodeId);
+    const previousNode = findPreviousNodeInSameColumn(mindmap.nodes as Node<NodeData>[], nodeId);
+    if (nextNode) {
+      get().updateSelectedNode(nextNode);
+    } else if (previousNode) {
+      get().updateSelectedNode(previousNode);
+    } else if (findParentNodeId(mindmap.edges, nodeId)) {
+      get().selectParentNode();
+    }
+
     const updatedNodes = mindmap.nodes.filter((node) => !nodesToDelete.has(node.id));
 
     // Recreate edges based on the remaining nodes
@@ -212,7 +222,7 @@ const useStore = create<RFStatePlay>((set, get) => ({
       )
       .map((edge) => ({
         ...edge,
-        id: `edge-${Math.random().toString(36).substr(2, 9)}` // Generate new unique ID
+        id: `edge-${Math.random().toString(36).substr(2, 9)}`
       }));
 
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
@@ -227,10 +237,6 @@ const useStore = create<RFStatePlay>((set, get) => ({
         edges: layoutedEdges as Edge[]
       }
     });
-
-    setTimeout(() => {
-      get().updateSelectedNode(null);
-    }, 10);
   },
   mindmap: null,
   createMindmap: async () => {
