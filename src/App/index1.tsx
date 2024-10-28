@@ -6,9 +6,21 @@ import useStore, { RFStatePlay } from "./store-play";
 import { selectorPlay } from "./types";
 import { TextUpdaterNode } from "./components/playground/playNode";
 import MyPanel from "./components/playground/PlayPanel";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const Flow = () => {
-  const { mindmap, onNodesChange, onEdgesChange, bgColor, createMindmap } = useStore<RFStatePlay>(selectorPlay);
+  const {
+    mindmap,
+    onNodesChange,
+    onEdgesChange,
+    bgColor,
+    createMindmap,
+    addChildNode,
+    selectNextNodeInSameColumn,
+    selectPreviousNodeInSameColumn,
+    selectParentNode,
+    selectFirstChildNode
+  } = useStore<RFStatePlay>(selectorPlay);
 
   if (!mindmap) {
     createMindmap();
@@ -16,6 +28,44 @@ const Flow = () => {
 
   const ReactFlowInstance = useReactFlow();
   const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
+
+  useHotkeys(
+    "tab",
+    (event) => {
+      event.preventDefault();
+      addChildNode();
+    },
+    // { enableOnFormTags: true },
+    [addChildNode]
+  );
+
+  useHotkeys(
+    "down",
+    (event) => {
+      console.log("down");
+      selectNextNodeInSameColumn();
+    },
+    [selectNextNodeInSameColumn]
+  );
+
+  useHotkeys(
+    "up",
+    (event) => {
+      console.log("not selected inside up");
+
+      console.log("up");
+      selectPreviousNodeInSameColumn();
+    },
+    [selectPreviousNodeInSameColumn]
+  );
+
+  useHotkeys("left", (event) => {
+    selectParentNode();
+  });
+
+  useHotkeys("right", (event) => {
+    selectFirstChildNode();
+  });
 
   useEffect(() => {
     ReactFlowInstance.fitView({ duration: 500 });

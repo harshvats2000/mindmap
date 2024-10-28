@@ -49,7 +49,12 @@ export const selectorPlay = (state: RFStatePlay) => ({
   createMindmap: state.createMindmap,
   mindmap: state.mindmap,
   setSelectedNode: state.setSelectedNode,
-  addSiblingNode: state.addSiblingNode
+  addSiblingNode: state.addSiblingNode,
+  selectPreviousSibling: state.selectPreviousSibling,
+  selectPreviousNodeInSameColumn: state.selectPreviousNodeInSameColumn,
+  selectNextNodeInSameColumn: state.selectNextNodeInSameColumn,
+  selectParentNode: state.selectParentNode,
+  selectFirstChildNode: state.selectFirstChildNode
 });
 
 export type IMindmap = {

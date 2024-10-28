@@ -14,7 +14,13 @@ import dagre from "@dagrejs/dagre";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import { nanoid } from "nanoid";
-import { findParentNodeId, findSourceEdge } from "./helpers";
+import {
+  findFirstChildNode,
+  findNextNodeInSameColumn,
+  findParentNodeId,
+  findPreviousNodeInSameColumn,
+  findPreviousSibling
+} from "./helpers";
 
 const nodeWidth = 150;
 const nodeHeight = 1;
@@ -61,7 +67,7 @@ export type RFStatePlay = {
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
   updateSelectedNode: (nodeId: string) => void;
-  addChildNode: (id: string) => void;
+  addChildNode: () => void;
   bgColor: string;
   updateBgColor: (color: string) => void;
   deleteNodeAndChildren: (nodeId: string) => void;
@@ -69,7 +75,12 @@ export type RFStatePlay = {
   toggleActionButton: () => void;
   createMindmap: () => Promise<string>;
   mindmap: IMindmap | null;
-  addSiblingNode: (id: string) => void;
+  addSiblingNode: () => void;
+  selectPreviousSibling: () => void;
+  selectPreviousNodeInSameColumn: () => void;
+  selectNextNodeInSameColumn: () => void;
+  selectParentNode: () => void;
+  selectFirstChildNode: () => void;
 };
 
 const useStore = create<RFStatePlay>((set, get) => ({
@@ -126,8 +137,10 @@ const useStore = create<RFStatePlay>((set, get) => ({
       selectedNode: get().mindmap?.nodes.find((node) => node.id === nodeId) || null
     });
   },
-  addChildNode: (id: string) => {
+  addChildNode: () => {
+    const id = get().selectedNode?.id;
     const mindmap = get().mindmap!;
+    console.log(mindmap);
     const node = mindmap.nodes.find((node) => node.id === id);
     const newNodeId = `node-${mindmap.nodes.length + 1}`;
     const newNodeLabel = `Node ${mindmap.nodes.length + 1}`;
@@ -289,7 +302,8 @@ const useStore = create<RFStatePlay>((set, get) => ({
       throw error;
     }
   },
-  addSiblingNode: (id: string) => {
+  addSiblingNode: () => {
+    const id = get().selectedNode?.id!;
     const mindmap = get().mindmap!;
 
     const newNodeId = `node-${mindmap.nodes.length + 1}`;
@@ -303,7 +317,7 @@ const useStore = create<RFStatePlay>((set, get) => ({
 
     const newEdge: Edge = {
       id: `edge-${mindmap.edges.length + 1}`,
-      source: findParentNodeId(mindmap, id)!,
+      source: findParentNodeId(mindmap.edges, id)!,
       target: newNode.id,
       type: "smoothstep",
       animated: true
@@ -331,6 +345,41 @@ const useStore = create<RFStatePlay>((set, get) => ({
     setTimeout(() => {
       get().updateSelectedNode(newNode.id);
     }, 10);
+  },
+  selectPreviousSibling: () => {
+    const id = get().selectedNode?.id!;
+    const previousSibling = findPreviousSibling(get().mindmap!, id);
+    if (previousSibling) {
+      get().updateSelectedNode(previousSibling);
+    }
+  },
+  selectPreviousNodeInSameColumn: () => {
+    const id = get().selectedNode?.id!;
+    const previousNode = findPreviousNodeInSameColumn(get().mindmap!.nodes, id);
+    if (previousNode) {
+      get().updateSelectedNode(previousNode);
+    }
+  },
+  selectNextNodeInSameColumn: () => {
+    const id = get().selectedNode?.id!;
+    const nextNode = findNextNodeInSameColumn(get().mindmap!.nodes, id);
+    if (nextNode) {
+      get().updateSelectedNode(nextNode);
+    }
+  },
+  selectParentNode: () => {
+    const id = get().selectedNode?.id!;
+    const parentNode = findParentNodeId(get().mindmap!.edges, id);
+    if (parentNode) {
+      get().updateSelectedNode(parentNode);
+    }
+  },
+  selectFirstChildNode: () => {
+    const id = get().selectedNode?.id!;
+    const firstChild = findFirstChildNode(get().mindmap!, id);
+    if (firstChild) {
+      get().updateSelectedNode(firstChild);
+    }
   }
 }));
 

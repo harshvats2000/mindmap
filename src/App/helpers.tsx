@@ -1,5 +1,5 @@
-import { Edge } from "@xyflow/react";
-import { IMindmap } from "./types";
+import { Edge, Node } from "@xyflow/react";
+import { IMindmap, NodeData } from "./types";
 
 export function darkenHexColor(hex: string, percent: number) {
   // Remove the hash at the start if it's there
@@ -70,11 +70,73 @@ export function formatRelativeTime(timestamp: number): string {
   return `${diffInYears} year${diffInYears !== 1 ? "s" : ""} ago`;
 }
 
-export function findSourceEdge(mindmap: IMindmap, nodeId: string): Edge | undefined {
-  return mindmap.edges.find((edge) => edge.target === nodeId);
+export function findSourceEdge(edges: Edge[], nodeId: string): Edge | undefined {
+  return edges.find((edge) => edge.target === nodeId);
 }
 
-export function findParentNodeId(mindmap: IMindmap, nodeId: string): string | undefined {
-  const sourceEdge = findSourceEdge(mindmap, nodeId);
+export function findParentNodeId(edges: Edge[], nodeId: string): string | undefined {
+  const sourceEdge = findSourceEdge(edges, nodeId);
   return sourceEdge?.source;
+}
+
+export function findSiblingNodes(edges: Edge[], nodeId: string): string[] {
+  const parentId = findParentNodeId(edges, nodeId);
+  if (!parentId) return [];
+
+  // Find all edges that come from the same parent
+  return edges.filter((edge) => edge.source === parentId && edge.target !== nodeId).map((edge) => edge.target);
+}
+
+export function findPreviousSibling(mindmap: IMindmap, nodeId: string): string | undefined {
+  const parentId = findParentNodeId(mindmap.edges, nodeId);
+  if (!parentId) return undefined;
+
+  // Get all edges from the parent, sorted by their target positions
+  const siblingEdges = mindmap.edges
+    .filter((edge) => edge.source === parentId)
+    .sort((a, b) => {
+      const nodeA = mindmap.nodes.find((n) => n.id === a.target);
+      const nodeB = mindmap.nodes.find((n) => n.id === b.target);
+      return (nodeA?.position?.y ?? 0) - (nodeB?.position?.y ?? 0);
+    });
+
+  // Find the current node's index
+  const currentIndex = siblingEdges.findIndex((edge) => edge.target === nodeId);
+  if (currentIndex <= 0) return undefined;
+
+  // Return the previous sibling's ID
+  return siblingEdges[currentIndex - 1].target;
+}
+
+export function findNodesInSameColumn(nodes: Node<NodeData>[], currentNode: Node<NodeData>): Node<NodeData>[] {
+  return nodes.filter((n) => n.id !== currentNode.id && n.position.x == currentNode.position.x);
+}
+
+export function findPreviousNodeInSameColumn(nodes: Node<NodeData>[], nodeId: string): string | undefined {
+  const currentNode = nodes.find((n) => n.id === nodeId);
+  if (!currentNode?.position) return undefined;
+
+  const nodesInSameColumn = findNodesInSameColumn(nodes, currentNode);
+
+  // Find the closest node that comes before the current node in y-position
+  return nodesInSameColumn
+    .filter((n) => n.position.y < currentNode.position.y)
+    .sort((a, b) => b.position.y - a.position.y)[0]?.id;
+}
+
+export function findNextNodeInSameColumn(nodes: Node<NodeData>[], nodeId: string): string | undefined {
+  const currentNode = nodes.find((n) => n.id === nodeId);
+  if (!currentNode?.position) return undefined;
+
+  const nodesInSameColumn = findNodesInSameColumn(nodes, currentNode);
+
+  // Find the closest node that comes after the current node in y-position
+  return nodesInSameColumn
+    .filter((n) => n.position.y > currentNode.position.y)
+    .sort((a, b) => a.position.y - b.position.y)[0]?.id;
+}
+
+export function findFirstChildNode(mindmap: IMindmap, nodeId: string): string | undefined {
+  const targetEdge = mindmap.edges.find((edge) => edge.source === nodeId);
+  return targetEdge?.target;
 }

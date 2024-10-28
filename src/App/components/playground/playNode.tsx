@@ -51,35 +51,9 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     updateSelectedNode(id);
   }, []);
 
-  useHotkeys(
-    "tab",
-    (event) => {
-      if (isSelected) {
-        event.preventDefault();
-        addChildNode(id);
-      }
-    },
-    { enableOnFormTags: true },
-    [addChildNode, isSelected]
-  );
-
-  // useHotkeys(
-  //   "enter",
-  //   (event) => {
-  //     event.preventDefault();
-  //     console.log(isEditing);
-  //     if (isEditing) {
-  //       setIsEditing(false);
-  //     } else {
-  //       setIsEditing(true);
-  //     }
-  //   },
-  //   { enableOnFormTags: true }
-  // );
-
   useEffect(() => {
-    if (isSelected) {
-      setIsEditing(true);
+    if (!isSelected) {
+      setIsEditing(false);
     }
   }, [selectedNode]);
 
@@ -145,8 +119,8 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
                     color: isSelected ? "#0066ff" : btnTextColor,
                     border: "none",
                     borderRadius: "50%",
-                    width: "1rem",
-                    height: "1rem",
+                    width: "0.9rem",
+                    height: "0.9rem",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -158,14 +132,8 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => addChildNode(id)}>Add Child</DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    addSiblingNode(id);
-                  }}
-                >
-                  Add Sibling
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={addChildNode}>Add Child</DropdownMenuItem>
+                <DropdownMenuItem onClick={addSiblingNode}>Add Sibling</DropdownMenuItem>
                 {id !== "root" && (
                   <DropdownMenuItem onClick={() => deleteNodeAndChildren(id)} className="text-red-600">
                     Delete Node
