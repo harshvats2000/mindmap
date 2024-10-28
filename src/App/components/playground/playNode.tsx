@@ -4,7 +4,13 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { NodeData, selectorPlay } from "@/App/types";
 import useStore, { RFStatePlay } from "@/App/store-play";
 import { darkenHexColor } from "@/App/helpers";
-// import { useHotkeys } from "react-hotkeys-hook";
+import { MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const [isEditing, setIsEditing] = useState(true);
@@ -12,7 +18,8 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     updateNodeLabel,
     updateSelectedNode,
     selectedNode,
-    addNode,
+    addChildNode,
+    addSiblingNode,
     bgColor,
     deleteNodeAndChildren,
     isActionButtonVisible
@@ -49,11 +56,11 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     (event) => {
       if (isSelected) {
         event.preventDefault();
-        addNode(id);
+        addChildNode(id);
       }
     },
     { enableOnFormTags: true },
-    [addNode, isSelected]
+    [addChildNode, isSelected]
   );
 
   // useHotkeys(
@@ -96,7 +103,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
               padding: "6px 10px",
               fontWeight: "normal",
               borderRadius: 10,
-              fontSize: 10,
+              fontSize: "8px",
               lineHeight: "normal",
               margin: 0,
               letterSpacing: "0px",
@@ -114,7 +121,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
               padding: "6px 10px",
               fontWeight: "normal",
               borderRadius: 10,
-              fontSize: 10,
+              fontSize: "8px",
               lineHeight: "normal",
               margin: 0,
               letterSpacing: "0px",
@@ -129,55 +136,43 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
         )}
 
         {isActionButtonVisible && isSelected && (
-          <div>
-            <div
-              style={{
-                width: "1rem",
-                height: "1rem",
-                background: isSelected ? "white" : btnBgColor,
-                color: isSelected ? "#0066ff" : btnTextColor,
-                borderRadius: 50,
-                display: "grid",
-                placeItems: "center",
-                fontSize: "0.8rem",
-                boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
-                position: "absolute",
-                top: "4px",
-                right: 5,
-                lineHeight: "0",
-                cursor: "pointer"
-              }}
-              onClick={() => {
-                addNode(id);
-              }}
-            >
-              +
-            </div>
-            {id !== "root" && (
-              <div
-                style={{
-                  width: "1rem",
-                  height: "1rem",
-                  background: isSelected ? "white" : btnBgColor,
-                  color: isSelected ? "#0066ff" : btnTextColor,
-                  borderRadius: 50,
-                  display: "grid",
-                  placeItems: "center",
-                  fontSize: "0.8rem",
-                  boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
-                  position: "absolute",
-                  top: "4px",
-                  right: 25,
-                  lineHeight: "0",
-                  cursor: "pointer"
-                }}
-                onClick={() => {
-                  deleteNodeAndChildren(id);
-                }}
-              >
-                -
-              </div>
-            )}
+          <div style={{ position: "absolute", top: "4px", right: "5px" }}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  style={{
+                    background: isSelected ? "white" : btnBgColor,
+                    color: isSelected ? "#0066ff" : btnTextColor,
+                    border: "none",
+                    borderRadius: "50%",
+                    width: "1rem",
+                    height: "1rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    padding: 0
+                  }}
+                >
+                  <MoreVertical size={14} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => addChildNode(id)}>Add Child</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    addSiblingNode(id);
+                  }}
+                >
+                  Add Sibling
+                </DropdownMenuItem>
+                {id !== "root" && (
+                  <DropdownMenuItem onClick={() => deleteNodeAndChildren(id)} className="text-red-600">
+                    Delete Node
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </div>

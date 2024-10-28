@@ -1,3 +1,6 @@
+import { Edge } from "@xyflow/react";
+import { IMindmap } from "./types";
+
 export function darkenHexColor(hex: string, percent: number) {
   // Remove the hash at the start if it's there
   hex = hex.replace(/^#/, "");
@@ -65,4 +68,13 @@ export function formatRelativeTime(timestamp: number): string {
 
   const diffInYears = Math.floor(diffInDays / 365);
   return `${diffInYears} year${diffInYears !== 1 ? "s" : ""} ago`;
+}
+
+export function findSourceEdge(mindmap: IMindmap, nodeId: string): Edge | undefined {
+  return mindmap.edges.find((edge) => edge.target === nodeId);
+}
+
+export function findParentNodeId(mindmap: IMindmap, nodeId: string): string | undefined {
+  const sourceEdge = findSourceEdge(mindmap, nodeId);
+  return sourceEdge?.source;
 }

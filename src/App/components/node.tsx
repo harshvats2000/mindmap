@@ -13,7 +13,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     updateNodeLabel,
     updateSelectedNode,
     selectedNode,
-    addNode,
+    addChildNode,
     bgColor,
     deleteNodeAndChildren,
     isActionButtonVisible,
@@ -26,11 +26,11 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const btnTextColor = darkenHexColor(bgColor, 10);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
-  const handleAddNode = () => {
+  const handleAddChildNode = () => {
     if (numberONodes >= 10) {
       setShowUpgradeModal(true);
     } else {
-      addNode(id);
+      addChildNode(id);
     }
   };
 
@@ -60,11 +60,11 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     (event) => {
       if (isSelected) {
         event.preventDefault();
-        handleAddNode();
+        handleAddChildNode();
       }
     },
     { enableOnFormTags: true },
-    [handleAddNode, isSelected]
+    [handleAddChildNode, isSelected]
   );
 
   // useHotkeys(
@@ -159,7 +159,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
                 cursor: "pointer"
               }}
               onClick={() => {
-                handleAddNode();
+                handleAddChildNode();
               }}
             >
               +

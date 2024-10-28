@@ -61,7 +61,7 @@ export type RFState = {
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
   updateSelectedNode: (nodeId: string) => void;
-  addNode: (id: string) => void;
+  addChildNode: (id: string) => void;
   bgColor: string;
   updateBgColor: (color: string) => void;
   deleteNodeAndChildren: (nodeId: string) => void;
@@ -160,7 +160,7 @@ const useStore = create<RFState>((set, get) => ({
       selectedNode: get().mindmap?.nodes.find((node) => node.id === nodeId) || null
     });
   },
-  addNode: (id: string) => {
+  addChildNode: (id: string) => {
     const mindmap = get().mindmap;
     if (!mindmap) {
       console.error("Mindmap not found");

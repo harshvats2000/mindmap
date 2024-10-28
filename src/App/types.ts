@@ -13,7 +13,7 @@ export const selector = (state: RFState) => ({
   updateSelectedNode: state.updateSelectedNode,
   updateNodeLabel: state.updateNodeLabel,
   selectedNode: state.selectedNode,
-  addNode: state.addNode,
+  addChildNode: state.addChildNode,
   bgColor: state.bgColor,
   updateBgColor: state.updateBgColor,
   deleteNodeAndChildren: state.deleteNodeAndChildren,
@@ -40,7 +40,7 @@ export const selectorPlay = (state: RFStatePlay) => ({
   updateSelectedNode: state.updateSelectedNode,
   updateNodeLabel: state.updateNodeLabel,
   selectedNode: state.selectedNode,
-  addNode: state.addNode,
+  addChildNode: state.addChildNode,
   bgColor: state.bgColor,
   updateBgColor: state.updateBgColor,
   deleteNodeAndChildren: state.deleteNodeAndChildren,
@@ -48,7 +48,8 @@ export const selectorPlay = (state: RFStatePlay) => ({
   toggleActionButton: state.toggleActionButton,
   createMindmap: state.createMindmap,
   mindmap: state.mindmap,
-  setSelectedNode: state.setSelectedNode
+  setSelectedNode: state.setSelectedNode,
+  addSiblingNode: state.addSiblingNode
 });
 
 export type IMindmap = {

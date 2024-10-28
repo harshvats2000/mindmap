@@ -14,6 +14,7 @@ import dagre from "@dagrejs/dagre";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import { nanoid } from "nanoid";
+import { findParentNodeId, findSourceEdge } from "./helpers";
 
 const nodeWidth = 150;
 const nodeHeight = 1;
@@ -60,7 +61,7 @@ export type RFStatePlay = {
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
   updateSelectedNode: (nodeId: string) => void;
-  addNode: (id: string) => void;
+  addChildNode: (id: string) => void;
   bgColor: string;
   updateBgColor: (color: string) => void;
   deleteNodeAndChildren: (nodeId: string) => void;
@@ -68,6 +69,7 @@ export type RFStatePlay = {
   toggleActionButton: () => void;
   createMindmap: () => Promise<string>;
   mindmap: IMindmap | null;
+  addSiblingNode: (id: string) => void;
 };
 
 const useStore = create<RFStatePlay>((set, get) => ({
@@ -124,7 +126,7 @@ const useStore = create<RFStatePlay>((set, get) => ({
       selectedNode: get().mindmap?.nodes.find((node) => node.id === nodeId) || null
     });
   },
-  addNode: (id: string) => {
+  addChildNode: (id: string) => {
     const mindmap = get().mindmap!;
     const node = mindmap.nodes.find((node) => node.id === id);
     const newNodeId = `node-${mindmap.nodes.length + 1}`;
@@ -286,6 +288,49 @@ const useStore = create<RFStatePlay>((set, get) => ({
       console.error("Error creating mindmap: ", error);
       throw error;
     }
+  },
+  addSiblingNode: (id: string) => {
+    const mindmap = get().mindmap!;
+
+    const newNodeId = `node-${mindmap.nodes.length + 1}`;
+    const newNodeLabel = `Node ${mindmap.nodes.length + 1}`;
+    const newNode: Node = {
+      id: newNodeId,
+      data: { label: newNodeLabel },
+      position: { x: 0, y: 0 },
+      type: "textUpdater"
+    };
+
+    const newEdge: Edge = {
+      id: `edge-${mindmap.edges.length + 1}`,
+      source: findParentNodeId(mindmap, id)!,
+      target: newNode.id,
+      type: "smoothstep",
+      animated: true
+    };
+
+    const edgeIndex = mindmap.edges.findIndex((edge) => edge.target === id);
+    const nodeIndex = mindmap.nodes.findIndex((node) => node.id === id);
+    const updatedNodes = [...mindmap.nodes.slice(0, nodeIndex + 1), newNode, ...mindmap.nodes.slice(nodeIndex + 1)];
+    const updatedEdges = [...mindmap.edges.slice(0, edgeIndex + 1), newEdge, ...mindmap.edges.slice(edgeIndex + 1)];
+
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      updatedNodes as Node<NodeData>[],
+      updatedEdges
+    );
+
+    set({
+      mindmap: {
+        ...mindmap,
+        nodes: layoutedNodes as Node<NodeData>[],
+        edges: layoutedEdges
+      }
+    });
+
+    // Select the new node after creation
+    setTimeout(() => {
+      get().updateSelectedNode(newNode.id);
+    }, 10);
   }
 }));
 

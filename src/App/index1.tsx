@@ -21,8 +21,6 @@ const Flow = () => {
     ReactFlowInstance.fitView({ duration: 500 });
   }, [mindmap?.nodes]);
 
-  console.log(bgColor);
-
   return (
     // <div style={{ width: "2000px", height: "100%" }}>
     <ReactFlow
