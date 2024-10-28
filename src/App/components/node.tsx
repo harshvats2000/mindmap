@@ -183,7 +183,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
                   cursor: "pointer"
                 }}
                 onClick={() => {
-                  deleteNodeAndChildren(id);
+                  deleteNodeAndChildren();
                 }}
               >
                 -

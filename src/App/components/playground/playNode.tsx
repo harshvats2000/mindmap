@@ -136,7 +136,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
                 <DropdownMenuItem onClick={addChildNode}>Add Child</DropdownMenuItem>
                 <DropdownMenuItem onClick={addSiblingNode}>Add Sibling</DropdownMenuItem>
                 {id !== "root" && (
-                  <DropdownMenuItem onClick={() => deleteNodeAndChildren(id)} className="text-red-600">
+                  <DropdownMenuItem onClick={() => deleteNodeAndChildren()} className="text-red-600">
                     Delete Node
                   </DropdownMenuItem>
                 )}

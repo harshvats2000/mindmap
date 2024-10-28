@@ -19,7 +19,8 @@ const Flow = () => {
     selectNextNodeInSameColumn,
     selectPreviousNodeInSameColumn,
     selectParentNode,
-    selectFirstChildNode
+    selectFirstChildNode,
+    deleteNodeAndChildren
   } = useStore<RFStatePlay>(selectorPlay);
 
   if (!mindmap) {
@@ -31,8 +32,7 @@ const Flow = () => {
 
   useHotkeys(
     "tab",
-    (event) => {
-      event.preventDefault();
+    () => {
       addChildNode();
     },
     // { enableOnFormTags: true },
@@ -63,6 +63,14 @@ const Flow = () => {
     selectFirstChildNode();
   });
 
+  useHotkeys("backspace", () => {
+    deleteNodeAndChildren();
+  });
+
+  // useHotkeys("enter", () => {
+  //   addSiblingNode();
+  // });
+
   useEffect(() => {
     ReactFlowInstance.fitView({ duration: 500 });
   }, [mindmap?.nodes]);
@@ -79,6 +87,7 @@ const Flow = () => {
       nodeTypes={nodeTypes}
       //   defaultViewport={{ x: 0, y: 0, zoom: 0.1 }}
       fitView
+      deleteKeyCode={null}
       // draggable={false}
     >
       <Background bgColor={bgColor} variant={BackgroundVariant.Dots} />

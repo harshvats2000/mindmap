@@ -64,7 +64,7 @@ export type RFState = {
   addChildNode: (id: string) => void;
   bgColor: string;
   updateBgColor: (color: string) => void;
-  deleteNodeAndChildren: (nodeId: string) => void;
+  deleteNodeAndChildren: () => void;
   isActionButtonVisible: boolean;
   toggleActionButton: () => void;
   isAuthenticating: boolean;
@@ -210,7 +210,9 @@ const useStore = create<RFState>((set, get) => ({
       get().updateSelectedNode(newNode.id);
     }, 10);
   },
-  deleteNodeAndChildren: (nodeId: string) => {
+  deleteNodeAndChildren: () => {
+    const nodeId = get().selectedNode?.id;
+    if (!nodeId || nodeId === "root") return;
     const nodesToDelete = new Set<string>();
     const edgesToDelete = new Set<string>();
     const mindmap = get().mindmap;

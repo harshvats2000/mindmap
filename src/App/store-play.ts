@@ -11,7 +11,6 @@ import {
 import { create } from "zustand";
 import { IMindmap, NodeData } from "./types";
 import dagre from "@dagrejs/dagre";
-import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import { nanoid } from "nanoid";
 import {
@@ -66,11 +65,11 @@ export type RFStatePlay = {
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   updateNodeLabel: (nodeId: string, label: string) => void;
-  updateSelectedNode: (nodeId: string) => void;
+  updateSelectedNode: (nodeId: string | null) => void;
   addChildNode: () => void;
   bgColor: string;
   updateBgColor: (color: string) => void;
-  deleteNodeAndChildren: (nodeId: string) => void;
+  deleteNodeAndChildren: () => void;
   isActionButtonVisible: boolean;
   toggleActionButton: () => void;
   createMindmap: () => Promise<string>;
@@ -132,13 +131,15 @@ const useStore = create<RFStatePlay>((set, get) => ({
       }
     });
   },
-  updateSelectedNode: (nodeId: string) => {
+  updateSelectedNode: (nodeId: string | null) => {
     set({
       selectedNode: get().mindmap?.nodes.find((node) => node.id === nodeId) || null
     });
   },
   addChildNode: () => {
     const id = get().selectedNode?.id;
+    if (!id) return;
+    console.log("id", id);
     const mindmap = get().mindmap!;
     const node = mindmap.nodes.find((node) => node.id === id);
     const newNodeId = `node-${mindmap.nodes.length + 1}`;
@@ -183,7 +184,9 @@ const useStore = create<RFStatePlay>((set, get) => ({
       get().updateSelectedNode(newNode.id);
     }, 10);
   },
-  deleteNodeAndChildren: (nodeId: string) => {
+  deleteNodeAndChildren: () => {
+    const nodeId = get().selectedNode?.id;
+    if (!nodeId || nodeId === "root") return;
     const nodesToDelete = new Set<string>();
     const edgesToDelete = new Set<string>();
     const mindmap = get().mindmap!;
@@ -224,6 +227,10 @@ const useStore = create<RFStatePlay>((set, get) => ({
         edges: layoutedEdges as Edge[]
       }
     });
+
+    setTimeout(() => {
+      get().updateSelectedNode(null);
+    }, 10);
   },
   mindmap: null,
   createMindmap: async () => {
