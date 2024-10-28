@@ -57,10 +57,11 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   }, [updateSelectedNode, id]);
 
   useEffect(() => {
-    if (!isSelected) {
-      setEditingNode(null);
+    if (isEditing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
     }
-  }, [isSelected, setEditingNode]);
+  }, [isEditing]);
 
   return (
     <div onDoubleClick={onDoubleClick} onClick={onSingleClick}>

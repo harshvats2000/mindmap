@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ReactFlow, ConnectionLineType, useReactFlow, Background, BackgroundVariant } from "@xyflow/react";
+import { ReactFlow, ConnectionLineType, useReactFlow, Background, BackgroundVariant, Panel } from "@xyflow/react";
 import "../index.css";
 import "@xyflow/react/dist/style.css";
 import useStore, { RFStatePlay } from "./store-play";
@@ -7,6 +7,46 @@ import { selectorPlay } from "./types";
 import { TextUpdaterNode } from "./components/playground/playNode";
 import MyPanel from "./components/playground/PlayPanel";
 import { useHotkeys } from "react-hotkeys-hook";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+
+const KeyboardShortcutsDialog = () => {
+  const shortcuts = [
+    { key: "Tab", description: "Add child node" },
+    { key: "Enter", description: "Edit selected node" },
+    { key: "Shift + Enter", description: "Add sibling node" },
+    { key: "↑", description: "Select previous node in column" },
+    { key: "↓", description: "Select next node in column" },
+    { key: "←", description: "Select parent node" },
+    { key: "→", description: "Select first child node" },
+    { key: "Backspace", description: "Delete node and children" }
+  ];
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="absolute bottom-4 right-4 hidden xl:block">
+          Keyboard Shortcuts
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Keyboard Shortcuts</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4">
+          {shortcuts.map((shortcut) => (
+            <div key={shortcut.key} className="flex justify-between">
+              <kbd className="px-2 py-1.5 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg">
+                {shortcut.key}
+              </kbd>
+              <span className="text-sm">{shortcut.description}</span>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 const Flow = () => {
   const {
@@ -45,12 +85,11 @@ const Flow = () => {
   useHotkeys(
     "enter",
     () => {
-      console.log(selectedNode?.id, editingNode);
       if (selectedNode) {
         if (selectedNode.id === editingNode) {
           setEditingNode(null);
         } else {
-          addSiblingNode();
+          setEditingNode(selectedNode.id);
         }
       }
     },
@@ -65,7 +104,7 @@ const Flow = () => {
         if (selectedNode.id === editingNode) {
           setEditingNode(null);
         } else {
-          setEditingNode(selectedNode.id);
+          addSiblingNode();
         }
       }
     },
@@ -126,6 +165,9 @@ const Flow = () => {
     >
       <Background bgColor={bgColor} variant={BackgroundVariant.Dots} />
       <MyPanel />
+      <Panel position="bottom-right">
+        <KeyboardShortcutsDialog />
+      </Panel>
     </ReactFlow>
     // </div>
   );
