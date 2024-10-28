@@ -12,13 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 
 const KeyboardShortcutsDialog = () => {
   const shortcuts = [
-    { key: "Tab", description: "Add child node" },
-    { key: "Enter", description: "Edit selected node" },
-    { key: "Shift + Enter", description: "Add sibling node" },
-    { key: "↑", description: "Select previous node in column" },
-    { key: "↓", description: "Select next node in column" },
-    { key: "←", description: "Select parent node" },
-    { key: "→", description: "Select first child node" },
+    { key: "Tab", description: "Add child" },
+    { key: "Enter", description: "Edit" },
+    { key: "Shift + Enter", description: "Add sibling" },
     { key: "Backspace", description: "Delete node and children" }
   ];
 
@@ -42,6 +38,19 @@ const KeyboardShortcutsDialog = () => {
               <span className="text-sm">{shortcut.description}</span>
             </div>
           ))}
+          <div className="flex justify-between">
+            <div className="flex gap-2">
+              {["↑", "↓", "←", "→"].map((key) => (
+                <kbd
+                  key={key}
+                  className="px-2 py-1.5 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg"
+                >
+                  {key}
+                </kbd>
+              ))}
+            </div>
+            <span className="text-sm">Navigate</span>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
