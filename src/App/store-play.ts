@@ -141,11 +141,12 @@ const useStore = create<RFStatePlay>((set, get) => ({
         edges: layoutedEdges as Edge[]
       }
     });
+    get().updateSelectedNode(newNode.id);
 
     // Might have race condition here, this is to ensure that the new node is selected after the layout is updated
-    setTimeout(() => {
-      get().updateSelectedNode(newNode.id);
-    }, 10);
+    // setTimeout(() => {
+    //   get().updateSelectedNode(newNode.id);
+    // }, 10);
   },
   deleteNodeAndChildren: () => {
     const nodeId = get().selectedNode?.id;
@@ -317,10 +318,7 @@ const useStore = create<RFStatePlay>((set, get) => ({
       }
     });
 
-    // Select the new node after creation
-    setTimeout(() => {
-      get().updateSelectedNode(newNode.id);
-    }, 10);
+    get().updateSelectedNode(newNode.id);
   },
   selectPreviousSibling: () => {
     const id = get().selectedNode?.id!;

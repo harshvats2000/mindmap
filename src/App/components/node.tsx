@@ -74,7 +74,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   }, [isEditing]);
 
   return (
-    <div onDoubleClick={onDoubleClick} onClick={onSingleClick}>
+    <div onDoubleClick={onDoubleClick}>
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
       <div style={{ width: 150, display: "grid", placeItems: "center", position: "relative" }}>
         {isEditing ? (
@@ -84,6 +84,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
             value={data.label}
             onChange={onChange}
             onBlur={onBlur}
+            onClick={onSingleClick}
             autoFocus
             className="node-input"
             style={{
@@ -103,6 +104,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
           />
         ) : (
           <div
+            onClick={onSingleClick}
             style={{
               overflow: "scroll",
               border: "none",

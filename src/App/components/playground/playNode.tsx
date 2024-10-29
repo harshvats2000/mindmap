@@ -53,6 +53,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   }, [setEditingNode]);
 
   const onSingleClick = useCallback(() => {
+    console.log(id);
     updateSelectedNode(id);
   }, [updateSelectedNode, id]);
 
@@ -64,7 +65,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   }, [isEditing]);
 
   return (
-    <div onDoubleClick={onDoubleClick} onClick={onSingleClick}>
+    <div onDoubleClick={onDoubleClick}>
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
       <div style={{ width: 150, display: "grid", placeItems: "center", position: "relative" }}>
         {isEditing ? (
@@ -76,6 +77,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
             onBlur={onBlur}
             autoFocus
             className="node-input"
+            onClick={onSingleClick}
             style={{
               border: "none",
               background: isSelected ? "#0066ff" : darkenColor,
@@ -94,6 +96,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
         ) : (
           <div
             className="no-scrollbar"
+            onClick={onSingleClick}
             style={{
               overflow: "scroll",
               border: "none",

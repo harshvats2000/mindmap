@@ -185,10 +185,7 @@ const useStore = create<RFState>((set, get) => ({
       numberONodes: layoutedNodes.length
     });
 
-    // Might have race condition here, this is to ensure that the new node is selected after the layout is updated
-    setTimeout(() => {
-      get().updateSelectedNode(newNode.id);
-    }, 10);
+    get().updateSelectedNode(newNode.id);
   },
   deleteNodeAndChildren: () => {
     const nodeId = get().selectedNode?.id;
@@ -370,10 +367,7 @@ const useStore = create<RFState>((set, get) => ({
       }
     });
 
-    // Select the new node after creation
-    setTimeout(() => {
-      get().updateSelectedNode(newNode.id);
-    }, 10);
+    get().updateSelectedNode(newNode.id);
   },
   selectPreviousSibling: () => {
     const id = get().selectedNode?.id!;
