@@ -103,7 +103,6 @@ const useStore = create<RFStatePlay>((set, get) => ({
   addChildNode: () => {
     const id = get().selectedNode?.id;
     if (!id) return;
-    console.log("id", id);
     const mindmap = get().mindmap!;
     const node = mindmap.nodes.find((node) => node.id === id);
     const newNodeId = `node-${mindmap.nodes.length + 1}`;

@@ -139,7 +139,7 @@ const useStore = create<RFState>((set, get) => ({
   },
   addChildNode: () => {
     const id = get().selectedNode?.id!;
-    if (!id || id === "root") return;
+    if (!id) return;
 
     const mindmap = get().mindmap;
     if (!mindmap) {

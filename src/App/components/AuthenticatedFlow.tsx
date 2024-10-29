@@ -127,6 +127,7 @@ const AuthenticatedFlow = () => {
       //   defaultViewport={{ x: 0, y: 0, zoom: 0.1 }}
       fitView
       // draggable={false}
+      deleteKeyCode={null}
     >
       <Background bgColor={bgColor} variant={BackgroundVariant.Dots} />
       <MyPanel />
