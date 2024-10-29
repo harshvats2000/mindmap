@@ -4,11 +4,30 @@ import { ReactFlow, Background, BackgroundVariant, ConnectionLineType, useReactF
 import useStore from "../store";
 import MyPanel from "./Panel";
 import { TextUpdaterNode } from "./node";
+import { KeyboardShortcutsDialog } from "./KeyboardShortcutsDialog";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const AuthenticatedFlow = () => {
   const { id } = useParams();
-  const { mindmap, onNodesChange, onEdgesChange, bgColor, loadMindmap, isFetchingMindmap, setIsFetchingMindmap } =
-    useStore();
+  const {
+    mindmap,
+    onNodesChange,
+    onEdgesChange,
+    bgColor,
+    loadMindmap,
+    isFetchingMindmap,
+    setIsFetchingMindmap,
+    addChildNode,
+    selectedNode,
+    editingNode,
+    setEditingNode,
+    addSiblingNode,
+    selectNextNodeInSameColumn,
+    selectPreviousNodeInSameColumn,
+    selectParentNode,
+    selectFirstChildNode,
+    deleteNodeAndChildren
+  } = useStore();
   const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
   const ReactFlowInstance = useReactFlow();
 
@@ -25,6 +44,72 @@ const AuthenticatedFlow = () => {
   useEffect(() => {
     ReactFlowInstance.fitView({ duration: 500 });
   }, [mindmap?.nodes]);
+
+  useHotkeys(
+    "tab",
+    () => {
+      addChildNode();
+    },
+    [addChildNode]
+  );
+
+  useHotkeys(
+    "enter",
+    () => {
+      if (selectedNode) {
+        if (selectedNode.id === editingNode) {
+          setEditingNode(null);
+        } else {
+          setEditingNode(selectedNode.id);
+        }
+      }
+    },
+    { enableOnFormTags: true },
+    [addSiblingNode, selectedNode, setEditingNode, editingNode]
+  );
+
+  useHotkeys(
+    "shift+enter",
+    () => {
+      if (selectedNode) {
+        if (selectedNode.id === editingNode) {
+          setEditingNode(null);
+        } else {
+          addSiblingNode();
+        }
+      }
+    },
+    { enableOnFormTags: true },
+    [selectedNode, setEditingNode, editingNode]
+  );
+
+  useHotkeys(
+    "down",
+    () => {
+      selectNextNodeInSameColumn();
+    },
+    [selectNextNodeInSameColumn]
+  );
+
+  useHotkeys(
+    "up",
+    () => {
+      selectPreviousNodeInSameColumn();
+    },
+    [selectPreviousNodeInSameColumn]
+  );
+
+  useHotkeys("left", () => {
+    selectParentNode();
+  });
+
+  useHotkeys("right", () => {
+    selectFirstChildNode();
+  });
+
+  useHotkeys("backspace", () => {
+    deleteNodeAndChildren();
+  });
 
   if (isFetchingMindmap) {
     return <div>Loading...</div>;
@@ -45,6 +130,7 @@ const AuthenticatedFlow = () => {
     >
       <Background bgColor={bgColor} variant={BackgroundVariant.Dots} />
       <MyPanel />
+      <KeyboardShortcutsDialog />
     </ReactFlow>
   );
 };

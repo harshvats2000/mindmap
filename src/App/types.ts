@@ -31,7 +31,15 @@ export const selector = (state: RFState) => ({
   setIsFetchingMindmap: state.setIsFetchingMindmap,
   setSelectedNode: state.setSelectedNode,
   isSavingMindmap: state.isSavingMindmap,
-  numberONodes: state.numberONodes
+  numberONodes: state.numberONodes,
+  addSiblingNode: state.addSiblingNode,
+  selectPreviousSibling: state.selectPreviousSibling,
+  selectPreviousNodeInSameColumn: state.selectPreviousNodeInSameColumn,
+  selectNextNodeInSameColumn: state.selectNextNodeInSameColumn,
+  selectParentNode: state.selectParentNode,
+  selectFirstChildNode: state.selectFirstChildNode,
+  editingNode: state.editingNode,
+  setEditingNode: state.setEditingNode
 });
 
 export const selectorPlay = (state: RFStatePlay) => ({

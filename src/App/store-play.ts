@@ -10,7 +10,6 @@ import {
 } from "@xyflow/react";
 import { create } from "zustand";
 import { IMindmap, NodeData } from "./types";
-import dagre from "@dagrejs/dagre";
 import { Timestamp } from "firebase/firestore";
 import { nanoid } from "nanoid";
 import {
@@ -18,46 +17,9 @@ import {
   findNextNodeInSameColumn,
   findParentNodeId,
   findPreviousNodeInSameColumn,
-  findPreviousSibling
+  findPreviousSibling,
+  getLayoutedElements
 } from "./helpers";
-
-const nodeWidth = 150;
-const nodeHeight = 1;
-
-const getLayoutedElements = (nodes: Node<NodeData>[], edges: Edge[], direction = "LR") => {
-  const dagreGraph = new dagre.graphlib.Graph({ compound: false }).setDefaultEdgeLabel(() => ({}));
-  const isHorizontal = direction === "LR";
-  dagreGraph.setGraph({ rankdir: direction });
-
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  });
-
-  edges.forEach((edge: any) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
-
-  dagre.layout(dagreGraph);
-
-  const newNodes = nodes.map((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    const newNode = {
-      ...node,
-      targetPosition: isHorizontal ? "left" : "top",
-      sourcePosition: isHorizontal ? "right" : "bottom",
-      // We are shifting the dagre node position (anchor=center center) to the top left
-      // so it matches the React Flow node anchor point (top left).
-      position: {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2
-      }
-    };
-
-    return newNode;
-  });
-
-  return { nodes: newNodes, edges };
-};
 
 export type RFStatePlay = {
   selectedNode: Node | null;

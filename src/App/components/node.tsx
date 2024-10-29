@@ -3,12 +3,16 @@ import { Handle, Position } from "@xyflow/react";
 import useStore from "../store";
 import { NodeData, selector } from "../types";
 import { darkenHexColor } from "../helpers";
-import { useHotkeys } from "react-hotkeys-hook";
 import UpgradeModal from "./UpgradeModal";
-// import { useHotkeys } from "react-hotkeys-hook";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical } from "lucide-react";
 
 export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
-  const [isEditing, setIsEditing] = useState(true);
   const {
     updateNodeLabel,
     updateSelectedNode,
@@ -17,7 +21,10 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     bgColor,
     deleteNodeAndChildren,
     isActionButtonVisible,
-    numberONodes
+    numberONodes,
+    editingNode,
+    setEditingNode,
+    addSiblingNode
   } = useStore(selector);
   const isSelected = selectedNode?.id === id;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -25,12 +32,13 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const btnBgColor = darkenHexColor(bgColor, 60);
   const btnTextColor = darkenHexColor(bgColor, 10);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const isEditing = editingNode === id;
 
   const handleAddChildNode = () => {
     if (numberONodes >= 10) {
       setShowUpgradeModal(true);
     } else {
-      addChildNode(id);
+      addChildNode();
     }
   };
 
@@ -42,50 +50,28 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     [updateNodeLabel, id]
   );
 
-  const onDoubleClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsEditing(true);
-  }, []);
+  const onDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setEditingNode(id);
+    },
+    [setEditingNode, id]
+  );
 
   const onBlur = useCallback(() => {
-    setIsEditing(false);
-  }, []);
+    setEditingNode(null);
+  }, [setEditingNode]);
 
   const onSingleClick = useCallback(() => {
     updateSelectedNode(id);
-  }, []);
-
-  useHotkeys(
-    "tab",
-    (event) => {
-      if (isSelected) {
-        event.preventDefault();
-        handleAddChildNode();
-      }
-    },
-    { enableOnFormTags: true },
-    [handleAddChildNode, isSelected]
-  );
-
-  // useHotkeys(
-  //   "enter",
-  //   (event) => {
-  //     event.preventDefault();
-  //     console.log(isEditing);
-  //     if (isEditing) {
-  //       setIsEditing(false);
-  //     } else {
-  //       setIsEditing(true);
-  //     }
-  //   },
-  //   { enableOnFormTags: true }
-  // );
+  }, [updateSelectedNode, id]);
 
   useEffect(() => {
-    if (isSelected) {
-      setIsEditing(true);
+    if (isEditing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
     }
-  }, [selectedNode]);
+  }, [isEditing]);
 
   return (
     <div onDoubleClick={onDoubleClick} onClick={onSingleClick}>
@@ -107,7 +93,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
               padding: "6px 10px",
               fontWeight: "normal",
               borderRadius: 10,
-              fontSize: 10,
+              fontSize: "8px",
               lineHeight: "normal",
               margin: 0,
               letterSpacing: "0px",
@@ -125,7 +111,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
               padding: "6px 10px",
               fontWeight: "normal",
               borderRadius: 10,
-              fontSize: 10,
+              fontSize: "8px",
               lineHeight: "normal",
               margin: 0,
               letterSpacing: "0px",
@@ -140,55 +126,37 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
         )}
 
         {isActionButtonVisible && isSelected && (
-          <div>
-            <div
-              style={{
-                width: "1rem",
-                height: "1rem",
-                background: isSelected ? "white" : btnBgColor,
-                color: isSelected ? "#0066ff" : btnTextColor,
-                borderRadius: 50,
-                display: "grid",
-                placeItems: "center",
-                fontSize: "0.8rem",
-                boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
-                position: "absolute",
-                top: "4px",
-                right: 5,
-                lineHeight: "0",
-                cursor: "pointer"
-              }}
-              onClick={() => {
-                handleAddChildNode();
-              }}
-            >
-              +
-            </div>
-            {id !== "root" && (
-              <div
-                style={{
-                  width: "1rem",
-                  height: "1rem",
-                  background: isSelected ? "white" : btnBgColor,
-                  color: isSelected ? "#0066ff" : btnTextColor,
-                  borderRadius: 50,
-                  display: "grid",
-                  placeItems: "center",
-                  fontSize: "0.8rem",
-                  boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
-                  position: "absolute",
-                  top: "4px",
-                  right: 25,
-                  lineHeight: "0",
-                  cursor: "pointer"
-                }}
-                onClick={() => {
-                  deleteNodeAndChildren();
-                }}
-              >
-                -
-              </div>
-            )}
+          <div style={{ position: "absolute", top: "4px", right: "5px" }}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  style={{
+                    background: isSelected ? "white" : btnBgColor,
+                    color: isSelected ? "#0066ff" : btnTextColor,
+                    border: "none",
+                    borderRadius: "50%",
+                    width: "0.9rem",
+                    height: "0.9rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    padding: 0
+                  }}
+                >
+                  <MoreVertical size={14} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={handleAddChildNode}>Add Child</DropdownMenuItem>
+                <DropdownMenuItem onClick={addSiblingNode}>Add Sibling</DropdownMenuItem>
+                {id !== "root" && (
+                  <DropdownMenuItem onClick={() => deleteNodeAndChildren()} className="text-red-600">
+                    Delete Node
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </div>

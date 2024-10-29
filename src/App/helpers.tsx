@@ -1,5 +1,6 @@
 import { Edge, Node } from "@xyflow/react";
 import { IMindmap, NodeData } from "./types";
+import dagre from "@dagrejs/dagre";
 
 export function darkenHexColor(hex: string, percent: number) {
   // Remove the hash at the start if it's there
@@ -140,3 +141,41 @@ export function findFirstChildNode(mindmap: IMindmap, nodeId: string): string | 
   const targetEdge = mindmap.edges.find((edge) => edge.source === nodeId);
   return targetEdge?.target;
 }
+
+const nodeWidth = 150;
+const nodeHeight = 1;
+
+export const getLayoutedElements = (nodes: Node<NodeData>[], edges: Edge[], direction = "LR") => {
+  const dagreGraph = new dagre.graphlib.Graph({ compound: false }).setDefaultEdgeLabel(() => ({}));
+  const isHorizontal = direction === "LR";
+  dagreGraph.setGraph({ rankdir: direction });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge: any) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const newNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    const newNode = {
+      ...node,
+      targetPosition: isHorizontal ? "left" : "top",
+      sourcePosition: isHorizontal ? "right" : "bottom",
+      // We are shifting the dagre node position (anchor=center center) to the top left
+      // so it matches the React Flow node anchor point (top left).
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2
+      }
+    };
+
+    return newNode;
+  });
+
+  return { nodes: newNodes, edges };
+};
