@@ -105,6 +105,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
         ) : (
           <div
             onClick={onSingleClick}
+            className="no-scrollbar"
             style={{
               overflow: "scroll",
               border: "none",
