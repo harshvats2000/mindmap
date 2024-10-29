@@ -13,23 +13,20 @@ const BgColorPicker = () => {
     "#4B2300" // Very Dark Brown (Dark Orange)
   ];
 
-  const handleColorSelect = (color: string) => {
-    updateBgColor(color);
+  const handleColorSelect = () => {
+    const currentIndex = colors.indexOf(bgColor);
+    const nextIndex = (currentIndex + 1) % colors.length;
+    updateBgColor(colors[nextIndex]);
   };
 
   return (
     <div>
-      <div className="btn" style={{ backgroundColor: darkenHexColor(bgColor, 20) }}>
-        <div className="flex flex-wrap gap-2">
-          {colors.map((color) => (
-            <button
-              key={color}
-              className="w-6 h-6 rounded-full border-none cursor-pointer"
-              style={{ backgroundColor: color }}
-              onClick={() => handleColorSelect(color)}
-            />
-          ))}
-        </div>
+      <div
+        className="flex items-center justify-center py-2 px-3 rounded-lg cursor-pointer"
+        style={{ backgroundColor: darkenHexColor(bgColor, 20) }}
+        onClick={handleColorSelect}
+      >
+        <button className="w-5 h-5 rounded-full border-none" style={{ backgroundColor: bgColor }} />
       </div>
     </div>
   );
