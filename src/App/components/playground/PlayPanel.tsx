@@ -24,7 +24,7 @@ const MyPanel = () => {
     <div>
       <Panel position="top-left">
         <button className="btn" style={{ backgroundColor: darkenHexColor(bgColor, 20) }} onClick={handleGoogleSignIn}>
-          Sign in with Google
+          Login
         </button>
       </Panel>
       <Panel position="top-right">
