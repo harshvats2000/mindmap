@@ -1,37 +1,87 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ReactFlow, ConnectionLineType, useReactFlow, Background, BackgroundVariant, Panel } from "@xyflow/react";
 import "../../index.css";
+import "./styles.css";
 import "@xyflow/react/dist/style.css";
 import useStore, { RFState } from "./store";
-import { FlowChartNode } from "./Node";
 import { selector } from "./types";
+import FlowChartNode from "./Node";
+import { useDnD } from "./DnDContext";
+import Sidebar from "./Sidebar";
+
+let id = 0;
+const getId = () => `dndnode_${id++}`;
 
 const Flow = () => {
-  const { mindmap, onNodesChange, onEdgesChange } = useStore<RFState>(selector);
+  const { mindmap, onNodesChange, onEdgesChange, onConnect, addNode } = useStore<RFState>(selector);
+
+  const { screenToFlowPosition } = useReactFlow();
+  const nodeTypes = useMemo(() => ({ flowChartNode: FlowChartNode }), []);
+  const [type] = useDnD();
+
+  const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  }, []);
+
+  const onDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+
+      // check if the dropped element is valid
+      if (!type) {
+        return;
+      }
+
+      // project was renamed to screenToFlowPosition
+      // and you don't need to subtract the reactFlowBounds.left/top anymore
+      // details: https://reactflow.dev/whats-new/2023-11-10
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY
+      });
+      const newNode = {
+        id: getId(),
+        type,
+        position,
+        data: { label: `${type}` }
+      };
+
+      addNode(newNode);
+    },
+    [screenToFlowPosition, type]
+  );
 
   if (!mindmap) {
     return <div>Loading...</div>;
   }
 
-  const ReactFlowInstance = useReactFlow();
-  const nodeTypes = useMemo(() => ({ flowChartNode: FlowChartNode }), []);
-
   return (
-    <ReactFlow
-      nodes={mindmap?.nodes}
-      edges={mindmap?.edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      // onConnect={onConnect}
-      connectionLineType={ConnectionLineType.SmoothStep}
-      nodeTypes={nodeTypes}
-      //   defaultViewport={{ x: 0, y: 0, zoom: 0.1 }}
-      fitView
-      deleteKeyCode={null}
-      // draggable={false}
-    >
-      <Background variant={BackgroundVariant.Dots} />
-    </ReactFlow>
+    <div className="dndflow">
+      <div className="dndflow">
+        <ReactFlow
+          nodes={mindmap?.nodes}
+          edges={mindmap?.edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          connectionLineType={ConnectionLineType.SmoothStep}
+          nodeTypes={nodeTypes}
+          fitView
+          deleteKeyCode={null}
+          draggable={false}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+        >
+          <Background variant={BackgroundVariant.Dots} />
+          {/* <Panel position="top-right">
+          <button onClick={() => addNode()}>Add Node</button>
+        </Panel> */}
+        </ReactFlow>
+      </div>
+
+      <Sidebar />
+    </div>
   );
 };
 

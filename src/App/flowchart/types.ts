@@ -13,5 +13,7 @@ export type Mindmap = {
 export const selector = (state: RFState) => ({
   mindmap: state.mindmap,
   onNodesChange: state.onNodesChange,
-  onEdgesChange: state.onEdgesChange
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+  addNode: state.addNode
 });

@@ -1,13 +1,25 @@
-import { Handle, Position } from "@xyflow/react";
-
+import { Handle, Position, useConnection } from "@xyflow/react";
 import { NodeData, selector } from "./types";
 
-export function FlowChartNode({ data, id }: { data: NodeData; id: string }) {
+export default function FlowChartNode({ data, id }: { data: NodeData; id: string }) {
+  const connection = useConnection();
+
+  const isTarget = connection.inProgress && connection.fromNode.id !== id;
+
   return (
-    <div>
-      <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
-      {data.label}
-      <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
+    <div className="customNode">
+      <div
+        className="customNodeBody"
+        style={{
+          borderStyle: isTarget ? "dashed" : "solid",
+          backgroundColor: isTarget ? "#ffcce3" : "#ccd9f6"
+        }}
+      >
+        <Handle position={Position.Top} type="target" />
+
+        <Handle position={Position.Bottom} type="source" />
+        {data.label}
+      </div>
     </div>
   );
 }
