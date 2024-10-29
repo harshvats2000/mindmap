@@ -150,11 +150,18 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => addNode(addChildNode)}>Add Child</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => addNode(addSiblingNode)}>Add Sibling</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addNode(addChildNode)}>
+                  Add Child
+                  <span className="ml-auto text-xs text-muted-foreground">Tab</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addNode(addSiblingNode)}>
+                  Add Sibling
+                  <span className="ml-auto text-xs text-muted-foreground">⇧ Enter</span>
+                </DropdownMenuItem>
                 {id !== "root" && (
                   <DropdownMenuItem onClick={() => deleteNodeAndChildren()} className="text-red-600">
                     Delete Node
+                    <span className="ml-auto text-xs text-muted-foreground">⌫</span>
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
