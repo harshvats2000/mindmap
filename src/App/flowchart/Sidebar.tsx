@@ -11,9 +11,9 @@ export default () => {
 
   return (
     <aside>
-      <div className="description">You can drag these nodes to the pane on the right.</div>
-      <div className="dndnode input" onDragStart={(event) => onDragStart(event, "flowChartNode")} draggable>
-        Input Node
+      <h2>Drag and Drop Nodes</h2>
+      <div className="dndnode input mt-2" onDragStart={(event) => onDragStart(event, "flowChartNode")} draggable>
+        Node
       </div>
     </aside>
   );

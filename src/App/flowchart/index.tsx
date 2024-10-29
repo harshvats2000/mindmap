@@ -44,7 +44,7 @@ const Flow = () => {
         id: getId(),
         type,
         position,
-        data: { label: `${type}` }
+        data: { label: `New Node` }
       };
 
       addNode(newNode);

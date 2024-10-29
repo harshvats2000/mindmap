@@ -33,26 +33,7 @@ export type RFState = {
 const useStore = create<RFState>((set, get) => ({
   mindmap: {
     edges: [],
-    nodes: [
-      {
-        id: "1",
-        data: { label: "harsh" },
-        type: "flowChartNode",
-        position: { x: 0, y: 0 }
-      },
-      {
-        id: "2",
-        data: { label: "dushy" },
-        type: "flowChartNode",
-        position: { x: 0, y: 100 }
-      },
-      {
-        id: "3",
-        data: { label: "guru" },
-        type: "flowChartNode",
-        position: { x: 0, y: 200 }
-      }
-    ]
+    nodes: []
   },
   onNodesChange: (changes: NodeChange[]) => {
     const mindmap = get().mindmap;
