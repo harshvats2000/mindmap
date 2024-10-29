@@ -2,6 +2,8 @@ import { Edge, Node } from "@xyflow/react";
 import { IMindmap, NodeData } from "./types";
 import dagre from "@dagrejs/dagre";
 
+export const COLORS = ["#004B4B", "#0b3158", "#3F1D38", "#4B2300"];
+
 export function darkenHexColor(hex: string, percent: number) {
   // Remove the hash at the start if it's there
   hex = hex.replace(/^#/, "");
