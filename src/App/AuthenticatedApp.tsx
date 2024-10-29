@@ -7,6 +7,7 @@ import App from "./index1";
 import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { ReactFlowProvider } from "@xyflow/react";
+import FlowChart from "./flowchart";
 
 const AuthenticatedApp = () => {
   const { user, setIsAuthenticating, setUser, isAuthenticating } = useStore();
@@ -34,6 +35,7 @@ const AuthenticatedApp = () => {
     <ReactFlowProvider>
       <Router>
         <Routes>
+          <Route path="/flowchart" element={<FlowChart />} />
           <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/" />} />
           <Route path="/mindmap/:id" element={user ? <AuthenticatedFlow /> : <Navigate to="/" />} />
           <Route path="/" element={<App />} />
