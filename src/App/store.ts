@@ -238,7 +238,8 @@ const useStore = create<RFState>((set, get) => ({
         ...mindmap,
         nodes: layoutedNodes as Node<NodeData>[],
         edges: layoutedEdges as Edge[]
-      }
+      },
+      numberONodes: layoutedNodes.length
     });
   },
   user: null,
@@ -364,7 +365,8 @@ const useStore = create<RFState>((set, get) => ({
         ...mindmap,
         nodes: layoutedNodes as Node<NodeData>[],
         edges: layoutedEdges
-      }
+      },
+      numberONodes: layoutedNodes.length
     });
 
     get().updateSelectedNode(newNode.id);

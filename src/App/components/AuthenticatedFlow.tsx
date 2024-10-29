@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ReactFlow, Background, BackgroundVariant, ConnectionLineType, useReactFlow } from "@xyflow/react";
 import useStore from "../store";
@@ -6,6 +6,7 @@ import MyPanel from "./Panel";
 import { TextUpdaterNode } from "./node";
 import { KeyboardShortcutsDialog } from "./KeyboardShortcutsDialog";
 import { useHotkeys } from "react-hotkeys-hook";
+import UpgradeModal from "./UpgradeModal";
 
 const AuthenticatedFlow = () => {
   const { id } = useParams();
@@ -26,10 +27,20 @@ const AuthenticatedFlow = () => {
     selectPreviousNodeInSameColumn,
     selectParentNode,
     selectFirstChildNode,
-    deleteNodeAndChildren
+    deleteNodeAndChildren,
+    numberONodes
   } = useStore();
   const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
   const ReactFlowInstance = useReactFlow();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  const addNode = (fn: () => void) => {
+    if (numberONodes >= 10) {
+      setShowUpgradeModal(true);
+    } else {
+      fn();
+    }
+  };
 
   useEffect(() => {
     setIsFetchingMindmap(true);
@@ -48,9 +59,9 @@ const AuthenticatedFlow = () => {
   useHotkeys(
     "tab",
     () => {
-      addChildNode();
+      addNode(addChildNode);
     },
-    [addChildNode]
+    [addChildNode, addNode]
   );
 
   useHotkeys(
@@ -75,12 +86,12 @@ const AuthenticatedFlow = () => {
         if (selectedNode.id === editingNode) {
           setEditingNode(null);
         } else {
-          addSiblingNode();
+          addNode(addSiblingNode);
         }
       }
     },
     { enableOnFormTags: true },
-    [selectedNode, setEditingNode, editingNode]
+    [selectedNode, setEditingNode, editingNode, addNode]
   );
 
   useHotkeys(
@@ -132,6 +143,7 @@ const AuthenticatedFlow = () => {
       <Background bgColor={bgColor} variant={BackgroundVariant.Dots} />
       <MyPanel />
       <KeyboardShortcutsDialog />
+      {showUpgradeModal && <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />}
     </ReactFlow>
   );
 };

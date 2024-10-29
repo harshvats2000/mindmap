@@ -34,11 +34,11 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const isEditing = editingNode === id;
 
-  const handleAddChildNode = () => {
+  const addNode = (fn: () => void) => {
     if (numberONodes >= 10) {
       setShowUpgradeModal(true);
     } else {
-      addChildNode();
+      fn();
     }
   };
 
@@ -150,8 +150,8 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={handleAddChildNode}>Add Child</DropdownMenuItem>
-                <DropdownMenuItem onClick={addSiblingNode}>Add Sibling</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addNode(addChildNode)}>Add Child</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addNode(addSiblingNode)}>Add Sibling</DropdownMenuItem>
                 {id !== "root" && (
                   <DropdownMenuItem onClick={() => deleteNodeAndChildren()} className="text-red-600">
                     Delete Node

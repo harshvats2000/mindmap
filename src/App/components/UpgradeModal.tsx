@@ -34,7 +34,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
             <span className="bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
@@ -80,6 +80,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                 className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105"
                 onClick={handleUpgrade}
                 disabled={loading}
+                autoFocus={false}
               >
                 {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Zap className="w-4 h-4 mr-2" />}
                 Upgrade Now
