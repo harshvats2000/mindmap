@@ -11,6 +11,7 @@ import {
   MarkerType
 } from "@xyflow/react";
 import { create } from "zustand";
+import { findNodeById } from "../helpers";
 
 export const addEndMarker = (edge: Edge) => ({
   ...edge,
@@ -28,9 +29,16 @@ export type RFState = {
   onEdgesChange: OnEdgesChange;
   onConnect: (params: any) => void;
   addNode: (node: Node) => void;
+  selectedNode: string | null;
+  setSelectedNode: (nodeId: string | null) => void;
+  deleteNode: () => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
+  selectedNode: null,
+  setSelectedNode: (nodeId: string | null) => {
+    set({ selectedNode: nodeId });
+  },
   mindmap: {
     edges: [],
     nodes: []
@@ -77,6 +85,19 @@ const useStore = create<RFState>((set, get) => ({
       mindmap: {
         ...state.mindmap,
         nodes: [...state.mindmap.nodes, node]
+      }
+    }));
+  },
+  deleteNode: () => {
+    const selectedNode = get().selectedNode;
+    if (!selectedNode) {
+      return;
+    }
+
+    set((state) => ({
+      mindmap: {
+        ...state.mindmap,
+        nodes: state.mindmap.nodes.filter((n: Node) => n.id !== selectedNode)
       }
     }));
   }

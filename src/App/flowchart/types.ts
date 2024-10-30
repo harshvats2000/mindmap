@@ -15,5 +15,8 @@ export const selector = (state: RFState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
-  addNode: state.addNode
+  addNode: state.addNode,
+  selectedNode: state.selectedNode,
+  setSelectedNode: state.setSelectedNode,
+  deleteNode: state.deleteNode
 });

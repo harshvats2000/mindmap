@@ -8,6 +8,7 @@ import { selector } from "./types";
 import FlowChartNode from "./Node";
 import { useDnD } from "./DnDContext";
 import Sidebar from "./Sidebar";
+import NodeActions from "./NodeActions";
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
@@ -77,6 +78,7 @@ const Flow = () => {
           {/* <Panel position="top-right">
           <button onClick={() => addNode()}>Add Node</button>
         </Panel> */}
+          <NodeActions />
         </ReactFlow>
       </div>
 

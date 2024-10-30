@@ -181,3 +181,7 @@ export const getLayoutedElements = (nodes: Node<NodeData>[], edges: Edge[], dire
 
   return { nodes: newNodes, edges };
 };
+
+export function findNodeById(nodes: Node<NodeData>[], nodeId: string | null): Node<NodeData> | undefined {
+  return nodeId ? nodes.find((n) => n.id === nodeId) : undefined;
+}
