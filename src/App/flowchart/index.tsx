@@ -9,6 +9,7 @@ import FlowChartNode from "./Node";
 import { useDnD } from "./DnDContext";
 import Sidebar from "./Sidebar";
 import NodeActions from "./NodeActions";
+import ButtonEdge from "./Edge";
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
@@ -18,6 +19,7 @@ const Flow = () => {
 
   const { screenToFlowPosition } = useReactFlow();
   const nodeTypes = useMemo(() => ({ flowChartNode: FlowChartNode }), []);
+  const edgeTypes = useMemo(() => ({ buttonEdge: ButtonEdge }), []);
   const [type] = useDnD();
 
   const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
@@ -68,6 +70,7 @@ const Flow = () => {
           onConnect={onConnect}
           connectionLineType={ConnectionLineType.SmoothStep}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           fitView
           deleteKeyCode={null}
           draggable={false}

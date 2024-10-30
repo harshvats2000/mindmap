@@ -32,6 +32,7 @@ export type RFState = {
   selectedNode: string | null;
   setSelectedNode: (nodeId: string | null) => void;
   deleteNode: () => void;
+  deleteEdge: (edgeId: string) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -72,11 +73,10 @@ const useStore = create<RFState>((set, get) => ({
     });
   },
   onConnect: (params: any) => {
-    console.log(params);
     set((state) => ({
       mindmap: {
         ...state.mindmap,
-        edges: addEdge(addEndMarker(params), state.mindmap.edges)
+        edges: addEdge(addEndMarker({ ...params, type: "buttonEdge" }), state.mindmap.edges)
       }
     }));
   },
@@ -99,6 +99,11 @@ const useStore = create<RFState>((set, get) => ({
         ...state.mindmap,
         nodes: state.mindmap.nodes.filter((n: Node) => n.id !== selectedNode)
       }
+    }));
+  },
+  deleteEdge: (edgeId: string) => {
+    set((state) => ({
+      mindmap: { ...state.mindmap, edges: state.mindmap.edges.filter((e: Edge) => e.id !== edgeId) }
     }));
   }
 }));
