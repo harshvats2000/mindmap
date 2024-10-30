@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ReactFlow, ConnectionLineType, useReactFlow, Background, BackgroundVariant, Panel } from "@xyflow/react";
+import {
+  ReactFlow,
+  ConnectionLineType,
+  useReactFlow,
+  Background,
+  BackgroundVariant,
+  Panel,
+  ConnectionMode
+} from "@xyflow/react";
 import "../../index.css";
 import "./styles.css";
 import "@xyflow/react/dist/style.css";
@@ -76,6 +84,7 @@ const Flow = () => {
           draggable={false}
           onDrop={onDrop}
           onDragOver={onDragOver}
+          connectionMode={ConnectionMode.Loose}
         >
           <Background variant={BackgroundVariant.Dots} />
           <NodeActions />

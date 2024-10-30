@@ -1,5 +1,13 @@
 import React from "react";
-import { BaseEdge, EdgeLabelRenderer, getBezierPath, useReactFlow, type EdgeProps } from "@xyflow/react";
+import {
+  BaseEdge,
+  EdgeLabelRenderer,
+  getBezierPath,
+  getSmoothStepPath,
+  getStraightPath,
+  useReactFlow,
+  type EdgeProps
+} from "@xyflow/react";
 import useStore, { RFState } from "./store";
 import { selector } from "./types";
 
@@ -16,13 +24,13 @@ export default function ButtonEdge({
 }: EdgeProps) {
   const { deleteEdge } = useStore<RFState>(selector);
 
-  const [edgePath, labelX, labelY] = getBezierPath({
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
-    sourcePosition,
+    // sourcePosition,
     targetX,
-    targetY,
-    targetPosition
+    targetY
+    // targetPosition
   });
 
   const onEdgeClick = () => {

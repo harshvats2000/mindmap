@@ -45,7 +45,20 @@ const useStore = create<RFState>((set, get) => ({
   },
   mindmap: {
     edges: [],
-    nodes: []
+    nodes: [
+      {
+        id: "1",
+        type: "flowChartNode",
+        data: { label: "Node 1" },
+        position: { x: 0, y: 0 }
+      },
+      {
+        id: "2",
+        type: "flowChartNode",
+        data: { label: "Node 2" },
+        position: { x: 0, y: 100 }
+      }
+    ]
   },
   onNodesChange: (changes: NodeChange[]) => {
     const mindmap = get().mindmap;
