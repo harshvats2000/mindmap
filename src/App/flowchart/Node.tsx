@@ -25,13 +25,14 @@ export default function FlowChartNode({ data, id }: { data: NodeData; id: string
             backgroundColor: isSelected ? "#0066ff" : "#ccd9f6"
           }}
         >
-          <Handle position={Position.Left} type="source" id="left" />
-          <Handle position={Position.Top} type="source" id="top" />
-          <Handle position={Position.Right} type="source" id="right" />
-          <Handle position={Position.Bottom} type="source" id="bottom" />
           {data.label}
         </div>
       )}
+
+      <Handle position={Position.Left} type="source" id="left" />
+      <Handle position={Position.Top} type="source" id="top" />
+      <Handle position={Position.Right} type="source" id="right" />
+      <Handle position={Position.Bottom} type="source" id="bottom" />
     </div>
   );
 }
