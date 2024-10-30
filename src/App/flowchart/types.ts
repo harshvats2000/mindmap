@@ -22,5 +22,7 @@ export const selector = (state: RFState) => ({
   deleteEdge: state.deleteEdge,
   editingNode: state.editingNode,
   setEditingNode: state.setEditingNode,
-  updateNode: state.updateNode
+  updateNode: state.updateNode,
+  duplicateNode: state.duplicateNode,
+  moveNode: state.moveNode
 });

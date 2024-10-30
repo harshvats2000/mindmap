@@ -18,12 +18,14 @@ import { useDnD } from "./DnDContext";
 import Sidebar from "./Sidebar";
 import NodeActions from "./NodeActions";
 import ButtonEdge from "./Edge";
+import { useHotkeys } from "react-hotkeys-hook";
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 const Flow = () => {
-  const { mindmap, onNodesChange, onEdgesChange, onConnect, addNode } = useStore<RFState>(selector);
+  const { mindmap, onNodesChange, onEdgesChange, onConnect, addNode, duplicateNode, moveNode } =
+    useStore<RFState>(selector);
 
   const { screenToFlowPosition } = useReactFlow();
   const nodeTypes = useMemo(() => ({ flowChartNode: FlowChartNode }), []);
@@ -63,6 +65,44 @@ const Flow = () => {
     [screenToFlowPosition, type]
   );
 
+  useHotkeys("d", () => {
+    duplicateNode();
+  });
+
+  useHotkeys("up", () => {
+    moveNode({ down: -5 });
+  });
+  useHotkeys("down", () => {
+    moveNode({ down: 5 });
+  });
+  useHotkeys("left", () => {
+    moveNode({ right: -5 });
+  });
+  useHotkeys("right", () => {
+    moveNode({ right: 5 });
+  });
+
+  useHotkeys("shift+up", () => {
+    moveNode({ down: -10 });
+  });
+  useHotkeys("shift+down", () => {
+    moveNode({ down: 10 });
+  });
+  useHotkeys("shift+left", () => {
+    moveNode({ right: -10 });
+  });
+  useHotkeys("shift+right", () => {
+    moveNode({ right: 10 });
+  });
+
+  useHotkeys(
+    "tab",
+    (e) => {
+      e.preventDefault();
+    },
+    { enableOnFormTags: true }
+  );
+
   if (!mindmap) {
     return <div>Loading...</div>;
   }
@@ -85,6 +125,7 @@ const Flow = () => {
           onDrop={onDrop}
           onDragOver={onDragOver}
           connectionMode={ConnectionMode.Loose}
+          elementsSelectable={false}
         >
           <Background variant={BackgroundVariant.Dots} />
           <NodeActions />

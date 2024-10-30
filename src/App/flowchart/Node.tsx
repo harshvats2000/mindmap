@@ -1,6 +1,7 @@
 import { Handle, Position, useConnection } from "@xyflow/react";
 import { NodeData, selector } from "./types";
 import useStore, { RFState } from "./store";
+import { Input } from "@/components/ui/input";
 
 export default function FlowChartNode({ data, id }: { data: NodeData; id: string }) {
   const connection = useConnection();
@@ -11,18 +12,28 @@ export default function FlowChartNode({ data, id }: { data: NodeData; id: string
   const isTarget = connection.inProgress && connection.fromNode.id !== id;
 
   return (
-    <div>
+    <div style={{ minWidth: 120 }}>
       {isEditing ? (
-        <input type="text" value={data.label} onChange={(e) => updateNode({ label: e.target.value })} />
+        <div>
+          <Input
+            role="hey"
+            className="py-0 text-center h-[unset] bg-white shadow-none focus:ring-0"
+            type="text"
+            value={data.label}
+            onChange={(e) => updateNode({ label: e.target.value })}
+            style={{ fontSize: "8px" }}
+          />
+        </div>
       ) : (
         <div
           onDoubleClick={() => setEditingNode(id)}
           onClick={() => {
             setSelectedNode(id);
           }}
-          className="cursor-pointer"
+          className="cursor-pointer text-center"
           style={{
-            backgroundColor: isSelected ? "#0066ff" : "#ccd9f6"
+            backgroundColor: isSelected ? "#0066ff" : "#ccd9f6",
+            fontSize: "8px"
           }}
         >
           {data.label}

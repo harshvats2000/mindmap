@@ -36,6 +36,8 @@ export type RFState = {
   editingNode: string | null;
   setEditingNode: (nodeId: string | null) => void;
   updateNode: (data: Partial<NodeData>) => void;
+  duplicateNode: () => void;
+  moveNode: ({ down, right }: { down?: number; right?: number }) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -132,6 +134,38 @@ const useStore = create<RFState>((set, get) => ({
       mindmap: {
         ...state.mindmap,
         nodes: state.mindmap.nodes.map((n: Node) => (n.id === state.selectedNode ? { ...n, data } : n))
+      }
+    }));
+  },
+  duplicateNode: () => {
+    const node = get().mindmap.nodes.find((n: Node) => n.id === get().selectedNode);
+    if (!node) {
+      return;
+    }
+
+    const newNode = {
+      id: `${node.id}-copy`,
+      type: node.type,
+      data: { ...node.data },
+      position: { x: node.position.x + 30, y: node.position.y + 30 }
+    };
+
+    get().addNode(newNode);
+
+    set({ selectedNode: newNode.id });
+  },
+  moveNode: ({ down, right }: { up?: number; down?: number; left?: number; right?: number }) => {
+    const node = get().mindmap.nodes.find((n: Node) => n.id === get().selectedNode);
+    if (!node) {
+      return;
+    }
+
+    set((state) => ({
+      mindmap: {
+        ...state.mindmap,
+        nodes: state.mindmap.nodes.map((n: Node) =>
+          n.id === node.id ? { ...n, position: { x: n.position.x + (right || 0), y: n.position.y + (down || 0) } } : n
+        )
       }
     }));
   }
