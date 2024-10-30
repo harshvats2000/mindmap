@@ -78,9 +78,6 @@ const Flow = () => {
           onDragOver={onDragOver}
         >
           <Background variant={BackgroundVariant.Dots} />
-          {/* <Panel position="top-right">
-          <button onClick={() => addNode()}>Add Node</button>
-        </Panel> */}
           <NodeActions />
         </ReactFlow>
       </div>

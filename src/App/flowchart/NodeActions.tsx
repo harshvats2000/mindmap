@@ -4,12 +4,17 @@ import useStore, { RFState } from "./store";
 import { Panel } from "@xyflow/react";
 
 const NodeActions = () => {
-  const { selectedNode, deleteNode } = useStore<RFState>(selector);
+  const { selectedNode, deleteNode, setEditingNode } = useStore<RFState>(selector);
 
   return (
     <Panel position="bottom-center">
-      <div>NodeActions</div>
-      <button onClick={deleteNode}>Delete</button>
+      {selectedNode && (
+        <>
+          <div>NodeActions</div>
+          <button onClick={deleteNode}>Delete</button>
+          <button onClick={() => setEditingNode(selectedNode)}>Edit</button>
+        </>
+      )}
     </Panel>
   );
 };
