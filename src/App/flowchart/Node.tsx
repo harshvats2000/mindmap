@@ -40,10 +40,20 @@ export default function FlowChartNode({ data, id }: { data: NodeData; id: string
         </div>
       )}
 
-      <Handle position={Position.Left} type="source" id="left" />
-      <Handle position={Position.Top} type="source" id="top" />
-      <Handle position={Position.Right} type="source" id="right" />
-      <Handle position={Position.Bottom} type="source" id="bottom" />
+      <Handle style={{ backgroundColor: "transparent", border: 0 }} position={Position.Left} type="source" id="left" />
+      <Handle style={{ backgroundColor: "transparent", border: 0 }} position={Position.Top} type="source" id="top" />
+      <Handle
+        style={{ backgroundColor: "transparent", border: 0 }}
+        position={Position.Right}
+        type="source"
+        id="right"
+      />
+      <Handle
+        style={{ backgroundColor: "transparent", border: 0 }}
+        position={Position.Bottom}
+        type="source"
+        id="bottom"
+      />
     </div>
   );
 }

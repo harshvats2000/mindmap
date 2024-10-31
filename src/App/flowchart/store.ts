@@ -12,6 +12,7 @@ import {
 } from "@xyflow/react";
 import { create } from "zustand";
 import { NodeData } from "./types";
+import { nanoid } from "nanoid";
 
 export const addEndMarker = (edge: Edge) => ({
   ...edge,
@@ -38,6 +39,8 @@ export type RFState = {
   updateNode: (data: Partial<NodeData>) => void;
   duplicateNode: () => void;
   moveNode: ({ down, right }: { down?: number; right?: number }) => void;
+  downloading: boolean;
+  toggleDownloading: (downloading: boolean) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -144,7 +147,7 @@ const useStore = create<RFState>((set, get) => ({
     }
 
     const newNode = {
-      id: `${node.id}-copy`,
+      id: nanoid(),
       type: node.type,
       data: { ...node.data },
       position: { x: node.position.x + 30, y: node.position.y + 30 }
@@ -168,6 +171,10 @@ const useStore = create<RFState>((set, get) => ({
         )
       }
     }));
+  },
+  downloading: false,
+  toggleDownloading: (downloading: boolean) => {
+    set({ downloading });
   }
 }));
 

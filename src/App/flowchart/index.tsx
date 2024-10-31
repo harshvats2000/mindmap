@@ -24,8 +24,17 @@ let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 const Flow = () => {
-  const { mindmap, onNodesChange, onEdgesChange, onConnect, addNode, duplicateNode, moveNode } =
-    useStore<RFState>(selector);
+  const {
+    mindmap,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    addNode,
+    duplicateNode,
+    moveNode,
+    deleteNode,
+    setSelectedNode
+  } = useStore<RFState>(selector);
 
   const { screenToFlowPosition } = useReactFlow();
   const nodeTypes = useMemo(() => ({ flowChartNode: FlowChartNode }), []);
@@ -94,6 +103,9 @@ const Flow = () => {
   useHotkeys("shift+right", () => {
     moveNode({ right: 10 });
   });
+  useHotkeys("backspace", () => {
+    deleteNode();
+  });
 
   useHotkeys(
     "tab",
@@ -126,6 +138,7 @@ const Flow = () => {
           onDragOver={onDragOver}
           connectionMode={ConnectionMode.Loose}
           elementsSelectable={false}
+          onPaneClick={() => setSelectedNode(null)}
         >
           <Background variant={BackgroundVariant.Dots} />
           <NodeActions />

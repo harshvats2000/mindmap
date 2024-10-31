@@ -24,5 +24,7 @@ export const selector = (state: RFState) => ({
   setEditingNode: state.setEditingNode,
   updateNode: state.updateNode,
   duplicateNode: state.duplicateNode,
-  moveNode: state.moveNode
+  moveNode: state.moveNode,
+  downloading: state.downloading,
+  toggleDownloading: state.toggleDownloading
 });

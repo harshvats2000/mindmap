@@ -3,6 +3,7 @@ import {
   BaseEdge,
   EdgeLabelRenderer,
   getBezierPath,
+  getSimpleBezierPath,
   getSmoothStepPath,
   getStraightPath,
   useReactFlow,
@@ -22,15 +23,15 @@ export default function ButtonEdge({
   style = {},
   markerEnd
 }: EdgeProps) {
-  const { deleteEdge } = useStore<RFState>(selector);
+  const { deleteEdge, downloading } = useStore<RFState>(selector);
 
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
-    // sourcePosition,
+    sourcePosition,
     targetX,
-    targetY
-    // targetPosition
+    targetY,
+    targetPosition
   });
 
   const onEdgeClick = () => {
@@ -41,21 +42,23 @@ export default function ButtonEdge({
     <>
       <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
       <EdgeLabelRenderer>
-        <div
-          style={{
-            position: "absolute",
-            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-            fontSize: 12,
-            // everything inside EdgeLabelRenderer has no pointer events by default
-            // if you have an interactive element, set pointer-events: all
-            pointerEvents: "all"
-          }}
-          className="nodrag nopan"
-        >
-          <button className="edgebutton" onClick={onEdgeClick}>
-            ×
-          </button>
-        </div>
+        {!downloading && (
+          <div
+            style={{
+              position: "absolute",
+              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              fontSize: 12,
+              // everything inside EdgeLabelRenderer has no pointer events by default
+              // if you have an interactive element, set pointer-events: all
+              pointerEvents: "all"
+            }}
+            className="nodrag nopan"
+          >
+            <button className="edgebutton" onClick={onEdgeClick}>
+              ×
+            </button>
+          </div>
+        )}
       </EdgeLabelRenderer>
     </>
   );

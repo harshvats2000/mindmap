@@ -19,16 +19,15 @@ const imageHeight = 768;
 export default () => {
   const [_, setType] = useDnD();
   const { getNodes } = useReactFlow();
-  const { setSelectedNode } = useStore<RFState>(selector);
+  const { setSelectedNode, toggleDownloading } = useStore<RFState>(selector);
   const onClick = () => {
-    // we calculate a transform for the nodes so that all nodes are visible
-    // we then overwrite the transform of the `.react-flow__viewport` element
-    // with the style option of the html-to-image library
+    toggleDownloading(true);
     const nodesBounds = getNodesBounds(getNodes());
     const viewport = getViewportForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2, 0);
 
     setSelectedNode(null);
     toPng(document.querySelector(".react-flow__viewport") as HTMLElement, {
+      backgroundColor: "#fff",
       width: imageWidth,
       height: imageHeight,
       style: {
@@ -36,7 +35,9 @@ export default () => {
         height: imageHeight.toString(),
         transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`
       }
-    }).then(downloadImage);
+    })
+      .then(downloadImage)
+      .finally(() => toggleDownloading(false));
   };
 
   const onDragStart = (event: React.DragEvent<HTMLDivElement>, nodeType: "flowChartNode") => {
