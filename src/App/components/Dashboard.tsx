@@ -175,10 +175,6 @@ const Dashboard = () => {
     </div>
   );
 
-  const handleUpgrade = () => {
-    setShowUpgradeModal(true);
-  };
-
   // useEffect(() => {
   //   (async () => {
   //     const token = await user?.getIdToken();
@@ -191,9 +187,10 @@ const Dashboard = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Mindmaps</h1>
         <div className="flex flex-row gap-2">
-          <Button
-            onClick={() => setShowUpgradeModal(true)}
-            className="
+          {!user?.isPro && (
+            <Button
+              onClick={() => setShowUpgradeModal(true)}
+              className="
           bg-gradient-to-r from-purple-500 to-pink-500
           hover:from-purple-600 hover:to-pink-600
           text-white font-semibold py-2 px-4 rounded-full
@@ -202,10 +199,11 @@ const Dashboard = () => {
           transform hover:scale-105
           flex items-center space-x-2
         "
-          >
-            <Sparkles className="w-5 h-5" />
-            <span>Upgrade to Pro</span>
-          </Button>
+            >
+              <Sparkles className="w-5 h-5" />
+              <span>Upgrade to Pro</span>
+            </Button>
+          )}
           <Button variant="outline" className="flex items-center gap-2" onClick={createNewMindmap}>
             <Plus className="h-4 w-4" />
             New MindMap

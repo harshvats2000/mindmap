@@ -77,3 +77,10 @@ export type IMindmap = {
   updatedAt: Timestamp;
   bgColor?: string;
 };
+
+export type IUser = {
+  uid: string;
+  email: string;
+  name: string;
+  isPro?: boolean;
+};

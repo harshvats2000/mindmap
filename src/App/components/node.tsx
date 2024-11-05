@@ -24,7 +24,8 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     numberOfNodes,
     editingNode,
     setEditingNode,
-    addSiblingNode
+    addSiblingNode,
+    user
   } = useStore(selector);
   const isSelected = selectedNode?.id === id;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,7 +36,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const isEditing = editingNode === id;
 
   const addNode = (fn: () => void) => {
-    if (numberOfNodes >= 10) {
+    if (numberOfNodes >= 10 && !user?.isPro) {
       setShowUpgradeModal(true);
     } else {
       fn();

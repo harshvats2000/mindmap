@@ -9,8 +9,7 @@ import {
   applyEdgeChanges
 } from "@xyflow/react";
 import { create } from "zustand";
-import { IMindmap, NodeData } from "./types";
-import { User } from "firebase/auth";
+import { IMindmap, IUser, NodeData } from "./types";
 import { updateDoc, doc, getDoc, Timestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { nanoid } from "nanoid";
@@ -38,8 +37,8 @@ export type RFState = {
   toggleActionButton: () => void;
   isAuthenticating: boolean;
   setIsAuthenticating: (isAuthenticating: boolean) => void;
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: IUser | null;
+  setUser: (user: IUser | null) => void;
   saveMindmap: () => Promise<void>;
   loadMindmap: (mindmapId: string) => Promise<void>;
   createMindmap: () => Promise<string>;
@@ -245,7 +244,7 @@ const useStore = create<RFState>((set, get) => ({
   user: null,
   isAuthenticating: true,
   setIsAuthenticating: (isAuthenticating: boolean) => set({ isAuthenticating }),
-  setUser: (user: User | null) => set({ user }),
+  setUser: (user: IUser | null) => set({ user }),
   saveMindmap: async () => {
     set({ isSavingMindmap: true });
     const { mindmap } = get();
