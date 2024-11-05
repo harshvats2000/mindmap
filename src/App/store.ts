@@ -47,7 +47,7 @@ export type RFState = {
   isFetchingMindmap: boolean;
   setIsFetchingMindmap: (isFetchingMindmap: boolean) => void;
   isSavingMindmap: boolean;
-  numberONodes: number;
+  numberOfNodes: number;
   addSiblingNode: () => void;
   selectPreviousSibling: () => void;
   selectPreviousNodeInSameColumn: () => void;
@@ -59,7 +59,7 @@ export type RFState = {
 };
 
 const useStore = create<RFState>((set, get) => ({
-  numberONodes: 1,
+  numberOfNodes: 1,
   selectedNode: null,
   setSelectedNode: (nodeId: string | null) => {
     set({ selectedNode: get().mindmap?.nodes.find((node) => node.id === nodeId) || null });
@@ -182,7 +182,7 @@ const useStore = create<RFState>((set, get) => ({
         nodes: layoutedNodes as Node<NodeData>[],
         edges: layoutedEdges as Edge[]
       },
-      numberONodes: layoutedNodes.length
+      numberOfNodes: layoutedNodes.length
     });
 
     get().updateSelectedNode(newNode.id);
@@ -239,7 +239,7 @@ const useStore = create<RFState>((set, get) => ({
         nodes: layoutedNodes as Node<NodeData>[],
         edges: layoutedEdges as Edge[]
       },
-      numberONodes: layoutedNodes.length
+      numberOfNodes: layoutedNodes.length
     });
   },
   user: null,
@@ -277,7 +277,7 @@ const useStore = create<RFState>((set, get) => ({
         set({
           mindmap: data as IMindmap,
           bgColor: data?.bgColor || get().bgColor,
-          numberONodes: data?.nodes?.length || 1
+          numberOfNodes: data?.nodes?.length || 1
         });
       } else {
         console.log("No such mindmap!");
@@ -317,7 +317,7 @@ const useStore = create<RFState>((set, get) => ({
 
       set({
         mindmap: { ...newMindmap, id: newMindmap.id },
-        numberONodes: 1
+        numberOfNodes: 1
       });
 
       return newMindmap.id;
@@ -366,7 +366,7 @@ const useStore = create<RFState>((set, get) => ({
         nodes: layoutedNodes as Node<NodeData>[],
         edges: layoutedEdges
       },
-      numberONodes: layoutedNodes.length
+      numberOfNodes: layoutedNodes.length
     });
 
     get().updateSelectedNode(newNode.id);

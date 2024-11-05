@@ -21,7 +21,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
     bgColor,
     deleteNodeAndChildren,
     isActionButtonVisible,
-    numberONodes,
+    numberOfNodes,
     editingNode,
     setEditingNode,
     addSiblingNode
@@ -35,7 +35,7 @@ export function TextUpdaterNode({ data, id }: { data: NodeData; id: string }) {
   const isEditing = editingNode === id;
 
   const addNode = (fn: () => void) => {
-    if (numberONodes >= 10) {
+    if (numberOfNodes >= 10) {
       setShowUpgradeModal(true);
     } else {
       fn();

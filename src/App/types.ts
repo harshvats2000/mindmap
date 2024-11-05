@@ -31,7 +31,7 @@ export const selector = (state: RFState) => ({
   setIsFetchingMindmap: state.setIsFetchingMindmap,
   setSelectedNode: state.setSelectedNode,
   isSavingMindmap: state.isSavingMindmap,
-  numberONodes: state.numberONodes,
+  numberOfNodes: state.numberOfNodes,
   addSiblingNode: state.addSiblingNode,
   selectPreviousSibling: state.selectPreviousSibling,
   selectPreviousNodeInSameColumn: state.selectPreviousNodeInSameColumn,

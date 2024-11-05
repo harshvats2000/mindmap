@@ -28,14 +28,14 @@ const AuthenticatedFlow = () => {
     selectParentNode,
     selectFirstChildNode,
     deleteNodeAndChildren,
-    numberONodes
+    numberOfNodes
   } = useStore();
   const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
   const ReactFlowInstance = useReactFlow();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const addNode = (fn: () => void) => {
-    if (numberONodes >= 10) {
+    if (numberOfNodes >= 10) {
       setShowUpgradeModal(true);
     } else {
       fn();
